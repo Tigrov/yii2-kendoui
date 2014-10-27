@@ -1,0 +1,19 @@
+{
+    "name": "tigrov/yii2-kendoui",
+    "description": "Kendo UI Extension for Yii 2",
+    "keywords": ["yii2", "kendo", "kendoui"],
+    "type": "yii2-extension",
+    "license": "BSD-3-Clause",
+    "support": {
+        "source": "https://github.com/tigrov/yii2-kendoui"
+    },
+    "authors": [
+        {
+            "name": "Sergey Tigrov",
+            "email": "rrr-r@ya.ru"
+        }
+    ],
+    "require": {
+        "yiisoft/yii2": "*"
+    }
+}
