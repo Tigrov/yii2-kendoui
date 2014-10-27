@@ -72,11 +72,11 @@ $(function () {
     dataSourceSettings.error = function(e){console.log(e.errors)}
     var dataSource = new kendo.data.DataSource(dataSourceSettings);
 
-    addressList = $("#addressList").kendoListViewPopup({
+    addressList = $("#addressList").kendoListView({
         dataSource: dataSource,
         template: kendo.template($("#addresTemplate").html()),
         editTemplate: kendo.template($("#addressEditTemplate").html())
-    }).data("kendoListViewPopup");
+    }).data("kendoListView");
 
     $(".k-add-button").click(function(e) {
         addressList.add();
