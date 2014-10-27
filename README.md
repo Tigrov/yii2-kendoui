@@ -72,7 +72,7 @@ $(function () {
     dataSourceSettings.error = function(e){console.log(e.errors)}
     var dataSource = new kendo.data.DataSource(dataSourceSettings);
 
-    addressList = $("#addressList").kendoListView({
+    var addressList = $("#addressList").kendoListView({
         dataSource: dataSource,
         template: kendo.template($("#addresTemplate").html()),
         editTemplate: kendo.template($("#addressEditTemplate").html())
