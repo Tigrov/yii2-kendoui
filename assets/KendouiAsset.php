@@ -9,7 +9,7 @@ class KendouiAsset extends \yii\web\AssetBundle
         'http://cdn.kendostatic.com/2014.2.1008/styles/kendo.bootstrap.min.css',
     ];
     public $js = [
-        'http://cdn.kendostatic.com/2014.2.1008/js/kendo.ui.all.min.js',
+        'http://cdn.kendostatic.com/2014.2.1008/js/kendo.ui.core.min.js',
     ];
     public $depends = [
         'yii\web\JqueryAsset',
