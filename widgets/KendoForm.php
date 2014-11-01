@@ -17,6 +17,9 @@ class KendoForm extends \yii\widgets\ActiveForm
      */
     public $fieldClass = 'tigrov\kendoui\widgets\KendoField';
 
+    /**
+     * @var DataSource
+     */
     public $dataSource;
 
     private $_actionInstance;
@@ -55,7 +58,7 @@ class KendoForm extends \yii\widgets\ActiveForm
      * @param string $attribute the attribute name or expression. See [[Html::getAttributeName()]] for the format
      * about attribute expression.
      * @param array $options the additional configurations for the field object
-     * @return ActiveField the created ActiveField object
+     * @return KendoField the created ActiveField object
      * @see fieldConfig
      */
     public function kendoField($attribute, $options = [])
