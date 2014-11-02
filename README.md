@@ -15,7 +15,7 @@ class AddressController extends Controller
         return $this->render('index');
     }
 
-    public static function kendouiActions()
+    public static function kendoActions()
     {
         $options = [
             'model' => Address::className(),
@@ -42,7 +42,7 @@ class AddressController extends Controller
 
     public function actions()
     {
-        return array_merge(parent::actions(), static::kendouiActions());
+        return array_merge(parent::actions(), static::kendoActions());
     }
 }
 ```
@@ -54,11 +54,11 @@ use yii\helpers\Url;
 use yii\helpers\Html;
 use \tigrov\kendoui\DataSource;
 use \tigrov\kendoui\widgets\KendoShortForm;
-use \tigrov\kendoui\assets\KendouiAsset;
+use \tigrov\kendoui\assets\KendoAsset;
 
 $this->setTitle(\Yii::t('user', 'Addresses'));
 
-KendouiAsset::register($this);
+KendoAsset::register($this);
 
 $dataSource = \Yii::createObject([
     'class' => DataSource::className(),

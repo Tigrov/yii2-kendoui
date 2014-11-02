@@ -1,7 +1,7 @@
 <?php
 namespace tigrov\kendoui\assets;
 
-class KendouiAsset extends \yii\web\AssetBundle
+class KendoAsset extends \yii\web\AssetBundle
 {
     public $sourcePath = null;
     public $css = [
