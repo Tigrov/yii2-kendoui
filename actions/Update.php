@@ -7,7 +7,7 @@ class Update extends Action
     {
         $this->updateData();
 
-        return json_encode($this->getResponseData());
+        return $this->getResponseData();
     }
 
     public function updateData()

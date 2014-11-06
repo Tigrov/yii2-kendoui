@@ -2,6 +2,7 @@
 namespace tigrov\kendoui\actions;
 
 use yii\base\InvalidConfigException;
+use yii\web\Response;
 
 /**
  * @property array $model settings for model (class, scenario, default attribute values and etc.).
@@ -12,6 +13,7 @@ use yii\base\InvalidConfigException;
  * @property array $attributeExcept names of attributes that must be excepted from result (default empty)
  * @property array $extraFields additional fields from ActiveRecord::extraFields() (default empty)
  * @property string $keySeparator multiple key separator (default "__")
+ * @property string $responseFormat multiple key separator (default Response::FORMAT_JSON)
  * @property bool $extendMode indicates the mode of model data read.
  * If true reading data from ActiveRecord::toArray() else from ActiveRecord::getAttributes().
  * Use true if your KendoUI DataSource field names from ActiveRecord::fields() is not equal to db attribute names
@@ -38,6 +40,7 @@ abstract class Action extends \yii\base\Action
     public $attributeExcept = [];
     public $extraFields = [];
     public $keySeparator = '__';
+    public $responseFormat = Response::FORMAT_JSON;
 
     /**
      * @var bool indicates the mode of model data read.
@@ -94,6 +97,7 @@ abstract class Action extends \yii\base\Action
     public function init()
     {
         parent::init();
+        \Yii::$app->response->format = $this->responseFormat;
         $this->registerTranslations();
     }
 

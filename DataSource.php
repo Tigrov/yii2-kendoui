@@ -4,15 +4,35 @@ namespace tigrov\kendoui;
 use yii\base\Object;
 use yii\helpers\Url;
 use yii\web\Controller;
+use tigrov\kendoui\actions\Action;
 use tigrov\kendoui\actions\Create;
 use tigrov\kendoui\actions\Read;
 use tigrov\kendoui\actions\Update;
 use tigrov\kendoui\actions\Delete;
 
+/**
+ * Class DataSource
+ * @package tigrov\kendoui
+ *
+ * @property-read Action $actionInstance instance of Action for generate model
+ */
+
 class DataSource extends Object
 {
+    /**
+     * @var array action IDs for generate transport object
+     */
     public $actionIds = [];
+
+    /**
+     * @var string ID for $actionInstance
+     */
     public $actionInstanceId;
+
+    /**
+     * @var array config for $actionInstance
+     */
+    public $actionConfig = [];
 
     private $_config = ['batch' => true, 'serverFiltering' => true, 'serverSorting' => true, 'serverPaging' => true, 'serverAggregates' => true];
     private $_controller;
@@ -40,12 +60,11 @@ class DataSource extends Object
 
     /**
      * @param Controller $controller
-     * @return Controller
      * @throws \Yii\base\UnknownClassException
      */
     public function setController(Controller $controller)
     {
-        return $this->_controller = $controller;
+        $this->_controller = $controller;
     }
 
     /**
@@ -76,14 +95,14 @@ class DataSource extends Object
     }
 
     /**
-     * @return \tigrov\kendoui\actions\Action
+     * @return Action
      */
     public function getActionInstance()
     {
         if ($this->_actionInstance === null) {
             $actions = $this->getActions();
             $id = $this->actionInstanceId ?: array_keys($actions)[0];
-            $action = array_merge(['id' => $id], $actions[$id]);
+            $action = array_merge(['id' => $id], $actions[$id], $this->actionConfig);
 
             $this->_actionInstance = \Yii::createObject($action, [$id, $this->getController()]);
         }
@@ -92,6 +111,8 @@ class DataSource extends Object
     }
 
     /**
+     * Settings for DataSource object
+     *
      * @return array
      */
     public function getSettings()
@@ -111,6 +132,8 @@ class DataSource extends Object
     }
 
     /**
+     * Settings for transport object
+     *
      * @return array
      */
     public function getTransport()
@@ -151,6 +174,8 @@ class DataSource extends Object
     }
 
     /**
+     * Settings for schema object
+     *
      * @return array
      */
     public function getSchema()
@@ -167,6 +192,8 @@ class DataSource extends Object
     }
 
     /**
+     * Settings for model object
+     *
      * @return array
      */
     public function getModel()
@@ -226,7 +253,9 @@ class DataSource extends Object
     }
 
     /**
-     * @return array
+     * Labels for forms and other
+     *
+     * @return array label list
      */
     public function getLabels()
     {
@@ -258,8 +287,10 @@ class DataSource extends Object
     }
 
     /**
-     * @param string $type
-     * @return string
+     * Convert DB type to Kendo UI type
+     *
+     * @param string $type DB type
+     * @return string Kendo UI type
      */
     public static function convertType($type)
     {

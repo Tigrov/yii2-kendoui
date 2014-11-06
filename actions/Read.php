@@ -55,10 +55,11 @@ class Read extends Action {
     {
         $this->queryData();
 
-        return json_encode($this->getResponseData());
+        return $this->getResponseData();
     }
 
-    public function queryData() {
+    public function queryData()
+    {
         $this->_queryFilter();
 
         $aggregates = $this->_calcAggregates();
@@ -296,7 +297,8 @@ class Read extends Action {
         return null;
     }
 
-    public static function parseDate($value) {
+    public static function parseDate($value)
+    {
         $result = date_parse($value);
         return $result["error_count"] < 1 && checkdate($result['month'], $result['day'], $result['year'])
             ? $result['year']

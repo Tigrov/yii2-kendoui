@@ -6,7 +6,7 @@ class Create extends Action {
     {
         $this->createData();
 
-        return json_encode($this->getResponseData());
+        return $this->getResponseData();
     }
 
     public function createData()

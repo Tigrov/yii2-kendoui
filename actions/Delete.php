@@ -6,7 +6,7 @@ class Delete extends Action {
     {
         $this->deleteData();
 
-        return json_encode($this->getResponseData());
+        return $this->getResponseData();
     }
 
     public function deleteData()
