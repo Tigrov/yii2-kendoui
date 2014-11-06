@@ -10,7 +10,7 @@ use yii\web\Response;
  * @property array $query setting additional conditions, joins and etc.
  * Using for \Yii::configure($modelClass::find(), $query)
  * @property array $attributeNames names of attributes that must be included into result (default all)
- * @property array $attributeExcept names of attributes that must be excepted from result (default empty)
+ * @property array $exceptAttributes names of attributes that must be excepted from result (default empty)
  * @property array $extraFields additional fields from ActiveRecord::extraFields() (default empty)
  * @property string $keySeparator multiple key separator (default "__")
  * @property string $responseFormat multiple key separator (default Response::FORMAT_JSON)
@@ -37,7 +37,7 @@ abstract class Action extends \yii\base\Action
     public $model;
     public $query;
     public $attributeNames = [];
-    public $attributeExcept = [];
+    public $exceptAttributes = [];
     public $extraFields = [];
     public $keySeparator = '__';
     public $responseFormat = Response::FORMAT_JSON;
@@ -197,7 +197,7 @@ abstract class Action extends \yii\base\Action
     {
         $data = $this->getExtendMode()
             ? $model->toArray($this->getAttributes(), $this->getExtraFields())
-            : $model->getAttributes($this->attributeNames, $this->attributeExcept);
+            : $model->getAttributes($this->attributeNames, $this->exceptAttributes);
 
         if (count($keys = $model::primaryKey()) > 1) {
             $data[implode($this->keySeparator, $keys)] = implode($this->keySeparator, $model->getPrimaryKey(true));
@@ -248,8 +248,8 @@ abstract class Action extends \yii\base\Action
      */
     public function getAttributes($autoFill = false)
     {
-        if ($this->attributeExcept) {
-            return array_diff($this->getModelInstance()->attributes(), $this->attributeExcept);
+        if ($this->exceptAttributes) {
+            return array_diff($this->getModelInstance()->attributes(), $this->exceptAttributes);
         }
 
         return !$autoFill || $this->attributeNames
