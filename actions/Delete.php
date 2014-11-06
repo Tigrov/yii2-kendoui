@@ -6,7 +6,7 @@ class Delete extends Action {
     {
         $this->deleteData();
 
-        return $this->getResponseData();
+        return parent::run();
     }
 
     public function deleteData()

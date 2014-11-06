@@ -100,6 +100,16 @@ abstract class Action extends \yii\base\Action
         $this->registerTranslations();
     }
 
+    /**
+     * @inheritdoc
+     */
+    public function run()
+    {
+        \Yii::$app->response->format = $this->responseFormat;
+
+        return $this->getResponseData();
+    }
+
     public function registerTranslations()
     {
         if (\Yii::$app->has('i18n')) {
@@ -322,8 +332,6 @@ abstract class Action extends \yii\base\Action
         if ($this->_responseData === null) {
             $this->_responseData = $this->collectResponseData();
         }
-
-        \Yii::$app->response->format = $this->responseFormat;
 
         return $this->_responseData;
     }

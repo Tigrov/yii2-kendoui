@@ -7,7 +7,7 @@ class Update extends Action
     {
         $this->updateData();
 
-        return $this->getResponseData();
+        return parent::run();
     }
 
     public function updateData()

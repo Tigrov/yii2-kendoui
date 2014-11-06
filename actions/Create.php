@@ -6,7 +6,7 @@ class Create extends Action {
     {
         $this->createData();
 
-        return $this->getResponseData();
+        return parent::run();
     }
 
     public function createData()

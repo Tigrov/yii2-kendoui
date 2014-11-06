@@ -55,7 +55,7 @@ class Read extends Action {
     {
         $this->queryData();
 
-        return $this->getResponseData();
+        return parent::run();
     }
 
     public function queryData()
