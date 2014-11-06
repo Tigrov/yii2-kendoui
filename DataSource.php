@@ -3,6 +3,7 @@ namespace tigrov\kendoui;
 
 use yii\base\Object;
 use yii\helpers\Url;
+use yii\helpers\ArrayHelper;
 use yii\web\Controller;
 use tigrov\kendoui\actions\Action;
 use tigrov\kendoui\actions\Create;
@@ -102,7 +103,7 @@ class DataSource extends Object
         if ($this->_actionInstance === null) {
             $actions = $this->getActions();
             $id = $this->actionInstanceId ?: array_keys($actions)[0];
-            $action = array_merge(['id' => $id], $actions[$id], $this->actionConfig);
+            $action = ArrayHelper::merge(['id' => $id], $actions[$id], $this->actionConfig);
 
             $this->_actionInstance = \Yii::createObject($action, [$id, $this->getController()]);
         }
