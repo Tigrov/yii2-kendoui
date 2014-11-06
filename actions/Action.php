@@ -97,7 +97,6 @@ abstract class Action extends \yii\base\Action
     public function init()
     {
         parent::init();
-        \Yii::$app->response->format = $this->responseFormat;
         $this->registerTranslations();
     }
 
@@ -323,6 +322,8 @@ abstract class Action extends \yii\base\Action
         if ($this->_responseData === null) {
             $this->_responseData = $this->collectResponseData();
         }
+
+        \Yii::$app->response->format = $this->responseFormat;
 
         return $this->_responseData;
     }
