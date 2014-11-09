@@ -4,6 +4,7 @@ namespace tigrov\kendoui;
 use yii\base\Object;
 use yii\helpers\Url;
 use yii\helpers\ArrayHelper;
+use yii\helpers\StringHelper;
 use yii\web\Controller;
 use tigrov\kendoui\actions\Action;
 use tigrov\kendoui\actions\Create;
@@ -24,6 +25,11 @@ class DataSource extends Object
      * @var array action IDs for generate transport object
      */
     public $actionIds = [];
+
+    /**
+     * @var string prefix for filtering actions
+     */
+    public $actionsPrefix;
 
     /**
      * @var string ID for $actionInstance
@@ -89,6 +95,11 @@ class DataSource extends Object
             $this->_actions = $this->getController()->actions();
             if ($this->actionIds) {
                 $this->_actions = array_intersect_key($this->_actions, array_flip($this->actionIds));
+            }
+            if ($this->actionsPrefix) {
+                $this->_actions = array_filter(function ($v) {
+                    return StringHelper::startsWith($v, $this->actionsPrefix);
+                }, $this->_actions);
             }
         }
 
