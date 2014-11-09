@@ -62,8 +62,10 @@ class KendoBuild {
 
     public static function actionPrefix($config)
     {
-        $className = is_string($config['model']) ? $config['model'] : $config['model']['class'];
-        return Inflector::camel2id(end(explode('\\', $className))).'-';
+        $className = explode('\\',
+            is_string($config['model']) ? $config['model'] : $config['model']['class']
+        );
+        return Inflector::camel2id(end($className)).'-';
     }
 
     public static function toAssociative($actions)
