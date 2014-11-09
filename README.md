@@ -8,6 +8,8 @@ How to use?
 
 @app/controllers/AddressController.php
 ```php
+use \tigrov\kendoui\KendoBuild;
+
 class AddressController extends Controller
 {
     public function actionIndex()
@@ -17,6 +19,7 @@ class AddressController extends Controller
 
     public static function kendoActions()
     {
+        // Address extends of ActiveRecord
         $options = [
             'model' => Address::className(),
             'query' => [
@@ -24,20 +27,7 @@ class AddressController extends Controller
             ],
         ];
 
-        return [
-            'create' => [
-                'class' => '\tigrov\kendoui\actions\Create',
-            ] + $options,
-            'read' => [
-                'class' => '\tigrov\kendoui\actions\Read',
-            ] + $options,
-            'update' => [
-                'class' => '\tigrov\kendoui\actions\Update',
-            ] + $options,
-            'delete' => [
-                'class' => '\tigrov\kendoui\actions\Delete',
-            ] + $options,
-        ];
+        return KendoBuild::actions($options);
     }
 
     public function actions()
