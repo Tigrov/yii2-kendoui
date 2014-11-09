@@ -51,10 +51,10 @@ class KendoBuild {
         $list = [];
         foreach ($actions as $id => $actionConfig) {
             $actionPrefix = !empty($actionConfig['model']) ? static::actionPrefix($actionConfig) : $prefix;
-            $id = !empty($actionConfig['id']) ? $actionConfig['id'] : $actionPrefix.$id;
+            $actionId = !empty($actionConfig['id']) ? $actionConfig['id'] : $actionPrefix.$id;
             unset($actionConfig['id']);
 
-            $list[$id] = ArrayHelper::merge(static::$_actions[$id], $config, $actionConfig);
+            $list[$actionId] = ArrayHelper::merge(static::$_actions[$id], $config, $actionConfig);
         }
 
         return $list;
