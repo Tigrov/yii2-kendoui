@@ -1,7 +1,7 @@
 Kendo UI Extension for Yii 2
 ============
 
-Currently implemented DataSource which is generating on model-base.
+Currently implemented DataSource which is generating on ActiveRecord model-base.
 
 How to use?
 ------------
