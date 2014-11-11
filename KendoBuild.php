@@ -23,6 +23,7 @@ class KendoBuild {
      * in the last example will have created list with two action types 'create' and 'read'.
      * Id for each action will have generated from "model class name" as prefix and type name as suffix "class-name-create".
      * Id can be specified as individual action setting ['actions' => ['create' => ['id' => 'model-create']]]
+     * or ['actions' => ['create' => 'model-create']]
      *
      * @return array List of actions [id => settings]
      */
@@ -50,9 +51,14 @@ class KendoBuild {
 
         $list = [];
         foreach ($actions as $id => $actionConfig) {
-            $actionPrefix = !empty($actionConfig['model']) ? static::actionPrefix($actionConfig) : $prefix;
-            $actionId = !empty($actionConfig['id']) ? $actionConfig['id'] : $actionPrefix.$id;
-            unset($actionConfig['id']);
+            if (is_string($actionConfig)) {
+                $actionId = $actionConfig;
+                $actionConfig = [];
+            } else {
+                $actionPrefix = !empty($actionConfig['model']) ? static::actionPrefix($actionConfig) : $prefix;
+                $actionId = !empty($actionConfig['id']) ? $actionConfig['id'] : $actionPrefix.$id;
+                unset($actionConfig['id']);
+            }
 
             $list[$actionId] = ArrayHelper::merge(static::$_actions[$id], $config, $actionConfig);
         }
