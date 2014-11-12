@@ -247,7 +247,10 @@ class DataSource extends Object
             $field = $extendMode && isset($fields[$attr]) ? $fields[$attr] : $attr;
             $column = $columns[$attr];
 
-            $model['fields'][$field] = ['type' => static::convertType($column->type)];
+            $model['fields'][$field] = [];
+            if (($type = static::convertType($column->type)) == 'string') {
+                $model['fields'][$field]['type'] = $type;
+            }
             if (!$column->allowNull && !$column->autoIncrement) {
                 $model['fields'][$field]['nullable'] = false;
                 $model['fields'][$field]['validation']['required'] = true;
