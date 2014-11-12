@@ -248,7 +248,7 @@ class DataSource extends Object
             $column = $columns[$attr];
 
             $model['fields'][$field] = [];
-            if (($type = static::convertType($column->type)) == 'string') {
+            if (($type = static::convertType($column->type)) !== 'string') {
                 $model['fields'][$field]['type'] = $type;
             }
             if (!$column->allowNull && !$column->autoIncrement) {
