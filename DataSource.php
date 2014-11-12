@@ -41,7 +41,13 @@ class DataSource extends Object
      */
     public $actionConfig = [];
 
-    private $_config = ['batch' => true, 'serverFiltering' => true, 'serverSorting' => true, 'serverPaging' => true, 'serverAggregates' => true];
+    private $_config = [
+        'batch' => true,
+        'serverFiltering' => true,
+        'serverSorting' => true,
+        'serverPaging' => true,
+        'serverAggregates' => true,
+    ];
     private $_controller;
     private $_actions;
     private $_actionInstance;
