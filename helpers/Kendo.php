@@ -18,4 +18,12 @@ class Kendo {
 
         return json_encode($names);
     }
+
+    public static function boolValues()
+    {
+        return static::toValues([
+            0 => 'No',
+            1 => 'Yes',
+        ]);
+    }
 } 
