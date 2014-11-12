@@ -19,6 +19,9 @@ class Kendo {
         return json_encode($names);
     }
 
+    /**
+     * @return string JSON list of values [{"text": "No", "value": 0}, {"text": "Yes", "value": 1}]
+     */
     public static function boolValues()
     {
         return static::toValues([
