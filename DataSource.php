@@ -103,9 +103,13 @@ class DataSource extends Object
                 $this->_actions = array_intersect_key($this->_actions, array_flip($this->actionIds));
             }
             if ($this->actionsPrefix) {
-                $this->_actions = array_filter(function ($k) {
-                    return StringHelper::startsWith($k, $this->actionsPrefix);
-                }, $this->_actions, ARRAY_FILTER_USE_KEY);
+                $this->_actions = array_filter(
+                    $this->_actions,
+                    function ($k) {
+                        return StringHelper::startsWith($k, $this->actionsPrefix);
+                    },
+                    ARRAY_FILTER_USE_KEY
+                );
             }
         }
 
