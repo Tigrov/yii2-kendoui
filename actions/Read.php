@@ -81,15 +81,17 @@ class Read extends Action {
 
     public function toModelArray($rows)
     {
-        $model = $this->getModelInstance();
         $attributes = $this->getAttributes();
         $extraFields = $this->getExtraFields();
-        $keys = $model::primaryKey();
+
+        $modelClass = $this->getModelClass();
+        $keys = $modelClass::primaryKey();
         $keysCount = count($keys);
         $pk = implode($this->keySeparator, $keys);
 
         $data = [];
         foreach ($rows as $i => $row) {
+            $model = $this->getModelInstance(true);
             $model->setAttributes($row, false);
             $data[$i] = $model->toArray($attributes, $extraFields);
             if ($keysCount > 1) {
