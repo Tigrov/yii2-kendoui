@@ -143,9 +143,9 @@ class Read extends Action {
 
     private function _calcAggregates()
     {
-        $functions = ['COUNT(*) AS `total`'];
+        $db = $this->getModelInstance()->getDb();
+        $functions = ['COUNT(*) AS ' . $db->quoteColumnName('total')];
         if (!is_null($aggregates = $this->getRequestData('aggregates')) && is_array($aggregates)) {
-            $db = $this->getModelInstance()->getDb();
             foreach ($aggregates as $aggregate) {
                 if (!empty($aggregate['aggregate']) && isset($this->_aggregateFunctions[$aggregate['aggregate']])
                     && !empty($aggregate['field']) && in_array($aggregate['field'], $this->getModelInstance()->attributes())
