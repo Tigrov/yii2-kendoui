@@ -248,13 +248,15 @@ abstract class Action extends \yii\base\Action
      */
     public function getAttributes($autoFill = false)
     {
-        if ($this->exceptAttributes) {
-            return array_diff($this->getModelInstance()->attributes(), $this->exceptAttributes);
-        }
-
-        return !$autoFill || $this->attributeNames
+        $attributes = !$autoFill && !$this->exceptAttributes || $this->attributeNames
             ? $this->attributeNames
             : $this->getModelInstance()->attributes();
+
+        if ($this->exceptAttributes) {
+            return array_diff($attributes, $this->exceptAttributes);
+        }
+
+        return $attributes;
     }
 
     public function getExtraFields()
