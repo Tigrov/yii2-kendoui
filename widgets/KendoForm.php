@@ -51,17 +51,9 @@ class KendoForm extends \yii\widgets\ActiveForm
     }
 
     /**
-     * Generates a form field.
-     * A form field is associated with a model and an attribute. It contains a label, an input and an error message
-     * and use them to interact with end users to collect their inputs for the attribute.
-     * @param Model $model the data model
-     * @param string $attribute the attribute name or expression. See [[Html::getAttributeName()]] for the format
-     * about attribute expression.
-     * @param array $options the additional configurations for the field object
-     * @return KendoField the created ActiveField object
-     * @see fieldConfig
+     * @inheritdoc
      */
-    public function kendoField($attribute, $options = [])
+    public function field($attribute, $options = [])
     {
         $model = $this->getModelInstance();
         $config = $this->fieldConfig;
@@ -78,24 +70,6 @@ class KendoForm extends \yii\widgets\ActiveForm
             'attribute' => $attribute,
             'form' => $this,
         ]));
-    }
-
-    /**
-     * Begins a form field.
-     * This method will create a new form field and returns its opening tag.
-     * You should call [[endField()]] afterwards.
-     * @param string $attribute the attribute name or expression. See [[Html::getAttributeName()]] for the format
-     * about attribute expression.
-     * @param array $options the additional configurations for the field object
-     * @return string the opening tag
-     * @see endField()
-     * @see field()
-     */
-    public function beginKendoField($attribute, $options = [])
-    {
-        $field = $this->kendoField($attribute, $options);
-        $this->_fields[] = $field;
-        return $field->begin();
     }
 
     public function getActionInstance()
