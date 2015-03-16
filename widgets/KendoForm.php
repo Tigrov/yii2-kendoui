@@ -75,7 +75,7 @@ class KendoForm extends \yii\widgets\ActiveForm
     {
         if ($this->_actionInstance === null) {
             if (!($this->dataSource instanceof DataSource)) {
-                throw new ErrorException('$this->dataSource must be instance of \common\kendoui\DataSource');
+                throw new ErrorException('$this->dataSource must be instance of \tigrov\kendoui\DataSource');
             }
 
             $this->_actionInstance = $this->dataSource->getActionInstance();
