@@ -96,12 +96,12 @@ AddressListJS
 <script type="text/x-kendo-tmpl" id="addressEditTemplate">
     <div class="address-form">
         <?php $form = KendoShortForm::begin(['dataSource' => $dataSource]); ?>
-            <?= $form->kendoField('first_name'); ?>
-            <?= $form->kendoField('last_name'); ?>
-            <?= $form->kendoField('company'); ?>
-            <?= $form->kendoField('address'); ?>
-            <?= $form->kendoField('city'); ?>
-            <?= $form->kendoField('postal_code'); ?>
+            <?= $form->field('first_name'); ?>
+            <?= $form->field('last_name'); ?>
+            <?= $form->field('company'); ?>
+            <?= $form->field('address'); ?>
+            <?= $form->field('city'); ?>
+            <?= $form->field('postal_code'); ?>
 
             <div class="k-edit-buttons k-state-default">
                 <a class="k-button k-button-icontext k-update-button k-primary" href="\\#"><span class="k-icon k-update"></span><?= \Yii::t('pro', 'Save'); ?></a>
