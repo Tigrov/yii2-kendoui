@@ -3,7 +3,6 @@ namespace tigrov\kendoui\widgets;
 
 use Yii;
 use yii\base\InvalidCallException;
-use yii\base\Model;
 use yii\helpers\ArrayHelper;
 use yii\base\ErrorException;
 use tigrov\kendoui\DataSource;
