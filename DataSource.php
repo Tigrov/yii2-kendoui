@@ -305,7 +305,7 @@ class DataSource extends Object
                 $result['fields'][$field]['nullable'] = false;
                 $result['fields'][$field]['validation']['required'] = true;
             }
-            if ($column->defaultValue) {
+            if ($column->defaultValue !== null) {
                 $result['fields'][$field]['defaultValue'] = $column->defaultValue;
             }
             if ($column->unsigned) {
