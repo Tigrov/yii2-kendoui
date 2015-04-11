@@ -93,6 +93,7 @@ class Read extends Action {
         foreach ($rows as $i => $row) {
             $model = $this->getModelInstance(true);
             $model::populateRecord($model, $row);
+            $model->afterFind();
             $data[$i] = $model->toArray($attributes, $extraFields);
             if ($keysCount > 1) {
                 $data[$i][$pk] = implode($this->keySeparator, $model->getPrimaryKey(true));
