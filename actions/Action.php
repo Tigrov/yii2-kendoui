@@ -34,12 +34,14 @@ use yii\web\Response;
 
 abstract class Action extends \yii\base\Action
 {
+    const DEFAULT_KEY_SEPARATOR = '__';
+
     public $model;
     public $query;
     public $attributeNames = [];
     public $exceptAttributes = [];
     public $extraFields = [];
-    public $keySeparator = '__';
+    public $keySeparator = self::DEFAULT_KEY_SEPARATOR;
     public $responseFormat = Response::FORMAT_JSON;
 
     /**

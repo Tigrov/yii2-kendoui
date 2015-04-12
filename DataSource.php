@@ -251,6 +251,7 @@ class DataSource extends Object
             'attributeNames' => $actionInstance->getAttributes(true),
             'extraFields' => $actionInstance->getExtraFields(),
             'extendMode' => $actionInstance->getExtendMode(),
+            'keySeparator' => $actionInstance->keySeparator,
         ]);
     }
 
@@ -258,7 +259,7 @@ class DataSource extends Object
      * Static method: setting for schema model
      *
      * @param \yii\db\ActiveRecord|mixed $model
-     * @param array $config ['attributeNames' => [...], 'exceptAttributes' => [...], 'extraFields' => [...], 'extendMode' => true|false]
+     * @param array $config ['attributeNames' => [...], 'exceptAttributes' => [...], 'extraFields' => [...], 'extendMode' => true|false, 'keySeparator' => '__']
      * @param array $args the constructor parameters for model
      * @return array
      */
@@ -274,6 +275,7 @@ class DataSource extends Object
         $attributes = array_diff($attributeNames, $exceptAttributes);
         $extraFields = isset($config['extraFields']) ? $config['extraFields'] : [];
         $extendMode = isset($config['extendMode']) || $extraFields;
+        $keySeparator = isset($config['keySeparator']) ? $config['keySeparator'] : Action::DEFAULT_KEY_SEPARATOR;
         $fields = $extendMode ? $model->fields() : [];
 
         $result = [];
@@ -285,7 +287,7 @@ class DataSource extends Object
                 $attributes[] = $pk;
             }
         } else {
-            $pk = implode('__', $keys);
+            $pk = implode($keySeparator, $keys);
             $result['id'] = $pk;
             if (!in_array($pk, $extraFields)) {
                 $extraFields[] = $pk;
