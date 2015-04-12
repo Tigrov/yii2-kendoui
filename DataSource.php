@@ -279,7 +279,7 @@ class DataSource extends Object
         $keySeparator = isset($config['keySeparator']) ? $config['keySeparator'] : Action::DEFAULT_KEY_SEPARATOR;
         $fields = $extendMode ? $model->fields() : [];
 
-        $result = [];
+        $result['fields'] = [];
         $keys = $model::primaryKey();
         if (count($keys) === 1) {
             $pk = $keys[0];
@@ -291,11 +291,10 @@ class DataSource extends Object
             $pk = implode($keySeparator, $keys);
             $result['id'] = $pk;
             if (!in_array($pk, $extraFields)) {
-                $extraFields[] = $pk;
+                $result['fields'][$pk] = [];
             }
         }
 
-        $result['fields'] = [];
         foreach ($attributes as $attr) {
             $field = $extendMode && isset($fields[$attr]) ? $fields[$attr] : $attr;
             $column = $columns[$attr];
