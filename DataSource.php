@@ -322,6 +322,9 @@ class DataSource extends Object
 
         foreach ($extraFields as $field) {
             $result['fields'][$field] = [];
+            if ($model->$field !== null) {
+                $result['fields'][$field]['defaultValue'] = $model->$field;
+            }
         }
 
         return $result;
