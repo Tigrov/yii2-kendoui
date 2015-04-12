@@ -266,6 +266,7 @@ class DataSource extends Object
     public static function model($model, array $config = [], array $args = [])
     {
         $model = is_object($model) ? $model : \Yii::createObject($model, $args);
+        $model->loadDefaultValues();
 
         $columns = $model->getTableSchema()->columns;
         $editableAttributes = $model->activeAttributes();
@@ -307,8 +308,9 @@ class DataSource extends Object
                 $result['fields'][$field]['nullable'] = false;
                 $result['fields'][$field]['validation']['required'] = true;
             }
-            if ($column->defaultValue !== null) {
-                $result['fields'][$field]['defaultValue'] = $column->defaultValue;
+            // Set default value
+            if ($model->$field !== null) {
+                $result['fields'][$field]['defaultValue'] = $model->$field;
             }
             if ($column->unsigned) {
                 $result['fields'][$field]['validation']['min'] = 0;
