@@ -260,11 +260,13 @@ class Read extends Action {
             return $where;
         }
 
-        if (!empty($filter['field']) && in_array($filter['field'], $this->getModelInstance()->attributes())
+        $modelInstance = $this->getModelInstance();
+        if (!empty($filter['field']) && in_array($filter['field'], $modelInstance->attributes())
                 && isset($filter['value']) && !empty($filter['operator'])
         ) {
-            $db = $this->getModelInstance()->getDb();
-            $attribute = $filter['field'];
+            $db = $modelInstance->getDb();
+            $tableName = $modelInstance::tableName();
+            $attribute = $tableName . '.' . $filter['field'];
             $value = $operator = null;
 
             if (isset($this->_numberOperators[$filter['operator']])) {
