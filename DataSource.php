@@ -47,6 +47,7 @@ class DataSource extends Object
         'serverSorting' => true,
         'serverPaging' => true,
         'serverAggregates' => true,
+        'pageSize' => 20,
     ];
     private $_controller;
     private $_actions;
