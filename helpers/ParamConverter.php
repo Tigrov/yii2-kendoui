@@ -102,8 +102,9 @@ class ParamConverter
             $attribute = $tableName . '.' . $filter['field'];
             $value = $operator = null;
 
-            if (isset(static::NUMBER_OPERATORS[$filter['operator']])) {
-                $operator = static::NUMBER_OPERATORS[$filter['operator']];
+            $numberOperators = static::NUMBER_OPERATORS;
+            if (isset($numberOperators[$filter['operator']])) {
+                $operator = $numberOperators[$filter['operator']];
                 $value = static::parseDate($filter['value']);
                 if ($value) {
                     $attribute = 'DATE(FROM_UNIXTIME(' . $db->quoteColumnName($attribute) . '))';
@@ -111,14 +112,15 @@ class ParamConverter
                     $value = (float)$filter['value'];
                 } elseif (in_array($filter['value'], ['true', 'false'])) {
                     $operator = $filter['value'] == 'false'
-                        ? static::NUMBER_OPERATORS['eq']
-                        : static::NUMBER_OPERATORS['neq'];
+                        ? $numberOperators['eq']
+                        : $numberOperators['neq'];
                     $value = 0;
                 }
             }
 
-            if ($value === null && isset(static::STRING_OPERATORS[$filter['operator']])) {
-                $operator = static::STRING_OPERATORS[$filter['operator']];
+            $stringOperators = static::STRING_OPERATORS;
+            if ($value === null && isset($stringOperators[$filter['operator']])) {
+                $operator = $stringOperators[$filter['operator']];
                 $value = $filter['value'];
                 if ($filter['operator'] == 'contains' || $filter['operator'] == 'doesnotcontain') {
                     $value = "%$value%";
@@ -156,13 +158,14 @@ class ParamConverter
     {
         $db = $model->getDb();
         $attributes = $model->attributes();
+        $aggregateFunctions = static::AGGREGATE_FUNCTIONS;
 
         $functions = [];
         foreach ($aggregates as $aggregate) {
-            if (!empty($aggregate['aggregate']) && isset(static::AGGREGATE_FUNCTIONS[$aggregate['aggregate']])
+            if (!empty($aggregate['aggregate']) && isset($aggregateFunctions[$aggregate['aggregate']])
                 && !empty($aggregate['field']) && in_array($aggregate['field'], $attributes)
             ) {
-                $funcName = static::AGGREGATE_FUNCTIONS[$aggregate['aggregate']];
+                $funcName = $aggregateFunctions[$aggregate['aggregate']];
                 $functions[] = $funcName . '(' . $db->quoteColumnName($aggregate['field']) . ') '
                     . ' AS ' . $db->quoteColumnName($aggregate['aggregate'] . '_' . $aggregate['field']);
             }
