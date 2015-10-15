@@ -2,46 +2,11 @@
 
 namespace tigrov\kendoui\actions;
 
-class Read extends Action {
-    const DEFAULT_FILTER_LOGIC = 'and';
+use tigrov\kendoui\helpers\ParamConverter;
 
+class Read extends Action {
     protected $total = 0;
     protected $aggregates;
-
-    /**
-     * @var array query operators for filter by string fields
-     */
-    private $_stringOperators = [
-        'eq' => 'like',
-        'neq' => 'not like',
-        'doesnotcontain' => 'not like',
-        'contains' => 'like',
-        'startswith' => 'like',
-        'endswith' => 'like',
-    ];
-
-    /**
-     * @var array query operators for filter by number fields
-     */
-    private $_numberOperators = [
-        'eq' => '=',
-        'gt' => '>',
-        'gte' => '>=',
-        'lt' => '<',
-        'lte' => '<=',
-        'neq' => '!=',
-    ];
-
-    /**
-     * @var array query functions for aggregate by fields
-     */
-    private $_aggregateFunctions = [
-        'average' => 'AVG',
-        'min' => 'MIN',
-        'max' => 'MAX',
-        'count' => 'COUNT',
-        'sum' => 'SUM',
-    ];
 
     /**
      * @var int maximum limit of rows
@@ -147,15 +112,7 @@ class Read extends Action {
         $db = $this->getModelInstance()->getDb();
         $functions = ['COUNT(*) AS ' . $db->quoteColumnName('total')];
         if (!is_null($aggregates = $this->getRequestData('aggregates')) && is_array($aggregates)) {
-            foreach ($aggregates as $aggregate) {
-                if (!empty($aggregate['aggregate']) && isset($this->_aggregateFunctions[$aggregate['aggregate']])
-                    && !empty($aggregate['field']) && in_array($aggregate['field'], $this->getModelInstance()->attributes())
-                ) {
-                    $funcName = $this->_aggregateFunctions[$aggregate['aggregate']];
-                    $functions[] = $funcName . '(' . $db->quoteColumnName($aggregate['field']) . ') '
-                        . ' AS ' . $db->quoteColumnName($aggregate['aggregate'] . '_' . $aggregate['field']);
-                }
-            }
+            $functions = array_merge($functions, ParamConverter::aggregate($aggregates, $this->getModelInstance()));
         }
 
         $row = $this->_getAggregatesRow($functions);
@@ -163,7 +120,7 @@ class Read extends Action {
         $total = $row['total'];
         unset($row['total']);
 
-        return array_merge(['total' => $total], $this->_getAggregatesValues($row));
+        return array_merge(['total' => $total], ParamConverter::aggregateValues($row));
     }
 
     private function _getAggregatesRow($functions)
@@ -189,17 +146,6 @@ class Read extends Action {
         return $command->queryOne();
     }
 
-    private function _getAggregatesValues($row)
-    {
-        $values = [];
-        foreach ($row as $field => $value) {
-            list($aggregate, $attribute) = explode('_', $field, 2);
-            $values[$attribute][$aggregate] = $value;
-        }
-
-        return $values;
-    }
-
     private function _queryTake()
     {
         if ($take = (int)$this->getRequestData('take')) {
@@ -220,7 +166,7 @@ class Read extends Action {
     private function _queryFilter()
     {
         if (!is_null($filter = $this->getRequestData('filter'))) {
-            if ($condition = $this->_filter($filter)) {
+            if ($condition = ParamConverter::filter($filter, $this->getModelInstance())) {
                 $this->getActiveQuery()->andWhere($condition);
             }
         }
@@ -229,86 +175,9 @@ class Read extends Action {
     private function _querySort()
     {
         if (!is_null($sort = $this->getRequestData('sort')) && is_array($sort)) {
-            foreach($sort as $s) {
-                if (!empty($s['field']) && in_array($s['field'], $this->getModelInstance()->attributes())
-                    && !empty($s['dir']) && in_array($s['dir'], ['asc', 'desc'], true)
-                ) {
-                    $this->getActiveQuery()->addOrderBy([$s['field'] => $s['dir'] == 'asc' ? SORT_ASC : SORT_DESC]);
-                }
+            if ($columns = ParamConverter::sort($sort, $this->getModelInstance())) {
+                $this->getActiveQuery()->addOrderBy($columns);
             }
         }
-    }
-
-    private function _filter($filter)
-    {
-        if (!empty($filter['filters']) && is_array($filter['filters'])) {
-            $logic = in_array($filter['logic'], ['or', 'and'], true) ? $filter['logic'] : self::DEFAULT_FILTER_LOGIC;
-
-            $where = [];
-            foreach ($filter['filters'] as $flt) {
-                if ($condition = $this->_filter($flt)) {
-                    $where[] = $condition;
-                }
-            }
-
-            if (count($where) > 1) {
-                array_unshift($where, $logic);
-            } else {
-                $where = $where ? $where[0] : null;
-            }
-
-            return $where;
-        }
-
-        $modelInstance = $this->getModelInstance();
-        if (!empty($filter['field']) && in_array($filter['field'], $modelInstance->attributes())
-                && isset($filter['value']) && !empty($filter['operator'])
-        ) {
-            $db = $modelInstance->getDb();
-            $tableName = $modelInstance::tableName();
-            $attribute = $tableName . '.' . $filter['field'];
-            $value = $operator = null;
-
-            if (isset($this->_numberOperators[$filter['operator']])) {
-                $operator = $this->_numberOperators[$filter['operator']];
-                $value = static::parseDate($filter['value']);
-                if ($value) {
-                    $attribute = 'DATE(FROM_UNIXTIME(' . $db->quoteColumnName($attribute) . '))';
-                } elseif (is_numeric($filter['value'])) {
-                    $value = (float)$filter['value'];
-                } elseif (in_array($filter['value'], ['true', 'false'])) {
-                    $operator = $filter['value'] == 'false'
-                        ? $this->_numberOperators['eq']
-                        : $this->_numberOperators['neq'];
-                    $value = 0;
-                }
-            }
-
-            if ($value === null && isset($this->_stringOperators[$filter['operator']])) {
-                $operator = $this->_stringOperators[$filter['operator']];
-                $value = $filter['value'];
-                if ($filter['operator'] == 'contains' || $filter['operator'] == 'doesnotcontain') {
-                    $value = "%$value%";
-                } elseif ($filter['operator'] == 'startswith') {
-                    $value = "$value%";
-                } elseif ($filter['operator'] == 'endswith') {
-                    $value = "%$value";
-                }
-            }
-
-            return $value !== null ? [$operator, $attribute, $value] : null;
-        }
-
-        return null;
-    }
-
-    public static function parseDate($value)
-    {
-        $result = date_parse($value);
-        return $result["error_count"] < 1 && checkdate($result['month'], $result['day'], $result['year'])
-            ? $result['year']
-                    . '-' . str_pad($result['month'], 2, '0', STR_PAD_LEFT)
-                    . '-' . str_pad($result['day'], 2, '0', STR_PAD_LEFT)
-            : null;
     }
 } 
