@@ -50,8 +50,12 @@ class ParamConverter
      * @param ActiveRecord $model model for generation orderBy columns
      * @return array columns for Query::orderBy()
      */
-    public static function sort(array $sort, ActiveRecord $model)
+    public static function sort($sort, ActiveRecord $model)
     {
+        if (!$sort || !is_array($sort)) {
+            return [];
+        }
+
         $attributes = $model->attributes();
 
         $columns = [];
@@ -73,8 +77,12 @@ class ParamConverter
      * @param ActiveRecord $model model for generation where condition
      * @return array|null where condition for Query::where()
      */
-    public static function filter(array $filter, ActiveRecord $model)
+    public static function filter($filter, ActiveRecord $model)
     {
+        if (!$filter || !is_array($filter)) {
+            return null;
+        }
+
         if (!empty($filter['filters']) && is_array($filter['filters'])) {
             $logic = in_array($filter['logic'], ['or', 'and'], true) ? $filter['logic'] : static::DEFAULT_FILTER_LOGIC;
 
@@ -156,6 +164,10 @@ class ParamConverter
      */
     public static function aggregate(array $aggregates, ActiveRecord $model)
     {
+        if (!$aggregates || !is_array($aggregates)) {
+            return [];
+        }
+
         $db = $model->getDb();
         $attributes = $model->attributes();
         $aggregateFunctions = static::AGGREGATE_FUNCTIONS;

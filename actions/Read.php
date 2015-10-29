@@ -111,8 +111,8 @@ class Read extends Action {
     {
         $db = $this->getModelInstance()->getDb();
         $functions = ['COUNT(*) AS ' . $db->quoteColumnName('total')];
-        if (!is_null($aggregates = $this->getRequestData('aggregates')) && is_array($aggregates)) {
-            $functions = array_merge($functions, ParamConverter::aggregate($aggregates, $this->getModelInstance()));
+        if ($aggregates = ParamConverter::aggregate($this->getRequestData('aggregates'), $this->getModelInstance())) {
+            $functions = array_merge($functions, $aggregates);
         }
 
         $row = $this->_getAggregatesRow($functions);
@@ -156,28 +156,22 @@ class Read extends Action {
 
     private function _querySkip()
     {
-        if ($skip = (int)$this->getRequestData('skip')) {
-            if ($skip > 0) {
-                $this->getActiveQuery()->offset($skip);
-            }
+        if (($skip = (int)$this->getRequestData('skip')) > 0) {
+            $this->getActiveQuery()->offset($skip);
         }
     }
 
     private function _queryFilter()
     {
-        if (!is_null($filter = $this->getRequestData('filter'))) {
-            if ($condition = ParamConverter::filter($filter, $this->getModelInstance())) {
-                $this->getActiveQuery()->andWhere($condition);
-            }
+        if ($condition = ParamConverter::filter($this->getRequestData('filter'), $this->getModelInstance())) {
+            $this->getActiveQuery()->andWhere($condition);
         }
     }
 
     private function _querySort()
     {
-        if (!is_null($sort = $this->getRequestData('sort')) && is_array($sort)) {
-            if ($columns = ParamConverter::sort($sort, $this->getModelInstance())) {
-                $this->getActiveQuery()->addOrderBy($columns);
-            }
+        if ($columns = ParamConverter::sort($this->getRequestData('sort'), $this->getModelInstance())) {
+            $this->getActiveQuery()->addOrderBy($columns);
         }
     }
 } 
