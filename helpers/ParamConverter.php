@@ -162,7 +162,7 @@ class ParamConverter
      * @param ActiveRecord $model model for generation aggregate functions
      * @return array aggregate functions for Query::select()
      */
-    public static function aggregate(array $aggregates, ActiveRecord $model)
+    public static function aggregate($aggregates, ActiveRecord $model)
     {
         if (!$aggregates || !is_array($aggregates)) {
             return [];
