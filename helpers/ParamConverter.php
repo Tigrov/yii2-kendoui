@@ -3,6 +3,7 @@ namespace tigrov\kendoui\helpers;
 
 
 use yii\db\ActiveRecord;
+use yii\db\Schema;
 
 class ParamConverter
 {
@@ -102,27 +103,39 @@ class ParamConverter
             return $where;
         }
 
-        if (!empty($filter['field']) && in_array($filter['field'], $model->attributes())
+        $columns = $model->getTableSchema()->columns;
+        if (!empty($filter['field']) && isset($columns[$filter['field']])
             && isset($filter['value']) && !empty($filter['operator'])
         ) {
             $db = $model->getDb();
             $tableName = $model::tableName();
             $attribute = $tableName . '.' . $filter['field'];
             $value = $operator = null;
+            $type = $columns[$filter['field']]->type;
 
             $numberOperators = static::NUMBER_OPERATORS;
             if (isset($numberOperators[$filter['operator']])) {
                 $operator = $numberOperators[$filter['operator']];
                 $value = static::parseDate($filter['value']);
                 if ($value) {
-                    $attribute = 'DATE(FROM_UNIXTIME(' . $db->quoteColumnName($attribute) . '))';
-                } elseif (is_numeric($filter['value'])) {
-                    $value = (float)$filter['value'];
-                } elseif (in_array($filter['value'], ['true', 'false'])) {
-                    $operator = $filter['value'] == 'false'
-                        ? $numberOperators['eq']
-                        : $numberOperators['neq'];
-                    $value = 0;
+                    if (in_array($type, [Schema::TYPE_INTEGER, Schema::TYPE_BIGINT])) {
+                        $attribute = 'DATE(FROM_UNIXTIME(' . $db->quoteColumnName($attribute) . '))';
+                    } elseif (in_array($type, [Schema::TYPE_TIMESTAMP, Schema::TYPE_DATE, Schema::TYPE_DATETIME, Schema::TYPE_TIME])) {
+                        $attribute = 'DATE(' . $db->quoteColumnName($attribute) . ')';
+                    } else {
+                        $value = null;
+                    }
+                }
+
+                if ($value === null) {
+                    if (is_numeric($filter['value'])) {
+                        $value = (float)$filter['value'];
+                    } elseif (in_array($filter['value'], ['true', 'false'])) {
+                        $operator = $filter['value'] == 'false'
+                            ? $numberOperators['eq']
+                            : $numberOperators['neq'];
+                        $value = 0;
+                    }
                 }
             }
 
