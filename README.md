@@ -3,6 +3,11 @@ Kendo UI Extension for Yii 2
 
 Currently implemented DataSource which is generating on ActiveRecord model-base.
 
+Can be used with:
+* Kendo Grid
+* Kendo List
+* other features are requiring DataSources
+
 How to use?
 ------------
 
