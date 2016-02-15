@@ -120,7 +120,8 @@ class ParamConverter
                 $value = static::parseDate($filter['value']);
                 if ($value) {
                     if (in_array($type, [Schema::TYPE_INTEGER, Schema::TYPE_BIGINT])) {
-                        $attribute = 'DATE(FROM_UNIXTIME(' . $db->quoteColumnName($attribute) . '))';
+                        $fromUnixtime = $db->driverName == 'pgsql' ? 'TO_TIMESTAMP' : 'FROM_UNIXTIME';
+                        $attribute = 'DATE(' . $fromUnixtime . '(' . $db->quoteColumnName($attribute) . '))';
                     } elseif (in_array($type, [Schema::TYPE_TIMESTAMP, Schema::TYPE_DATE, Schema::TYPE_DATETIME, Schema::TYPE_TIME])) {
                         $attribute = 'DATE(' . $db->quoteColumnName($attribute) . ')';
                     } else {
