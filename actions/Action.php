@@ -178,7 +178,12 @@ abstract class Action extends \yii\base\Action
         $query = $this->getActiveQuery();
         $query->andWhere($keysData);
 
-        return $query->one();
+        $model = $query->one();
+        if ($model && is_array($this->model) && isset($this->model['scenario'])) {
+            $model->scenario = $this->model['scenario'];
+        }
+
+        return $model;
     }
 
     public function setExtendMode($value)
