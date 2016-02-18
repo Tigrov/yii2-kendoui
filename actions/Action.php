@@ -38,7 +38,7 @@ abstract class Action extends \yii\base\Action
 
     public $model;
     public $query;
-    public $attributeNames = [];
+    public $attributeNames;
     public $exceptAttributes = [];
     public $extraFields = [];
     public $keySeparator = self::DEFAULT_KEY_SEPARATOR;
