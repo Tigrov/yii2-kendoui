@@ -30,6 +30,6 @@ class Kendo {
 
     public static function escapeStr($value)
     {
-        return str_replace("'", '&apos;', $value);
+        return str_replace("'", '\\u0027', $value);
     }
 } 
