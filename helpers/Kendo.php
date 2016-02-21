@@ -19,17 +19,17 @@ class Kendo {
         return json_encode($names);
     }
 
-    public static function escape($value, $count = 1)
+    public static function escape($value)
     {
         if (is_array($value)) {
-            return array_map([__CLASS__, 'escapeStr'], $value, array_fill(0, count($value) - 1, $count));
+            return array_map([__CLASS__, 'escapeStr'], $value);
         }
 
-        return static::escapeStr($value, $count);
+        return static::escapeStr($value);
     }
 
-    public static function escapeStr($value, $count = 1)
+    public static function escapeStr($value)
     {
-        return str_replace('#', str_repeat('\\', $count) . '#', $value);
+        return str_replace("'", '&apos;', $value);
     }
 } 
