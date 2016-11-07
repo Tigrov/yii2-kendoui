@@ -196,6 +196,11 @@ abstract class Action extends \yii\base\Action
         return $this->_extendMode || $this->extraFields;
     }
 
+    public function composeKey($keys)
+    {
+        return implode($this->keySeparator, $keys);
+    }
+
     /**
      * @param $model \yii\db\ActiveRecord
      * @return array
@@ -207,7 +212,7 @@ abstract class Action extends \yii\base\Action
             : $model->getAttributes($this->attributeNames, $this->exceptAttributes);
 
         if (count($keys = $model::primaryKey()) > 1) {
-            $data[implode($this->keySeparator, $keys)] = implode($this->keySeparator, $model->getPrimaryKey(true));
+            $data[$this->composeKey($keys)] = $this->composeKey($model->getPrimaryKey(true));
         }
 
         return $data;
@@ -236,12 +241,23 @@ abstract class Action extends \yii\base\Action
     }
 
     /**
-     * @param $model \yii\db\ActiveRecord
+     * @param \yii\db\ActiveRecord $model
      */
     public function addValidationErrors($model)
     {
-        list($key) = array_values($model->getPrimaryKey(true));
-        $this->_errors['validation'][$key] = $model->getErrors();
+        $keyValue = $this->composeKey($model->getPrimaryKey(true));
+        $this->_errors['validation'][$keyValue] = $model->getErrors();
+    }
+
+    /**
+     * @param \yii\db\ActiveRecord $model
+     * @param \Exception $event
+     */
+    public function addEventErrorMessage($model, $event)
+    {
+        $keyField = $this->composeKey($model::primaryKey());
+        $keyValue = $this->composeKey($model->getPrimaryKey(true));
+        $this->_errors['validation'][$keyValue][$keyField] = $event->getMessage();
     }
 
     public function getErrors()

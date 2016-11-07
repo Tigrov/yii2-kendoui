@@ -17,11 +17,17 @@ class Create extends Action {
             foreach ($data as $item) {
                 $model = $this->getModelInstance(true);
                 $model->setAttributes($item);
-                if ($model->save()) {
-                    $this->data[] = $this->getModelData($model);
-                } else {
+                try {
+                    if ($model->save()) {
+                        $this->data[] = $this->getModelData($model);
+                    } else {
+                        $this->data[] = $item;
+                        $this->addValidationErrors($model);
+                    }
+                } catch (\yii\db\IntegrityException $e) {
+                    // one or more unique constraint violations
                     $this->data[] = $item;
-                    $this->addValidationErrors($model);
+                    $this->addEventErrorMessage($model, $e);
                 }
             }
         }
