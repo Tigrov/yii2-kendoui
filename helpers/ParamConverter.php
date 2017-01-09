@@ -111,7 +111,6 @@ class ParamConverter
             $db = $model->getDb();
             $tableName = $model::tableName();
             $attribute = $tableName . '.' . $filter['field'];
-            $value = $operator = null;
             $type = $columns[$filter['field']]->type;
 
             $numberOperators = static::NUMBER_OPERATORS;
@@ -139,10 +138,14 @@ class ParamConverter
                         $value = 0;
                     }
                 }
+
+                if ($value !== null) {
+                    return [$operator, $attribute, $value];
+                }
             }
 
             $stringOperators = static::STRING_OPERATORS;
-            if ($value === null && isset($stringOperators[$filter['operator']])) {
+            if (isset($stringOperators[$filter['operator']])) {
                 $operator = $stringOperators[$filter['operator']];
                 $value = $filter['value'];
                 if ($filter['operator'] == 'contains' || $filter['operator'] == 'doesnotcontain') {
@@ -152,9 +155,11 @@ class ParamConverter
                 } elseif ($filter['operator'] == 'endswith') {
                     $value = "%$value";
                 }
-            }
 
-            return $value !== null ? [$operator, $attribute, $value] : null;
+                if ($value !== null) {
+                    return [$operator, $attribute, $value, false];
+                }
+            }
         }
 
         return null;
