@@ -116,9 +116,11 @@ abstract class Action extends \yii\base\Action
     {
         if (\Yii::$app->has('i18n')) {
             $i18n = \Yii::$app->i18n;
-            $i18n->translations[$this->translateCategory] = [
-                'class' => 'yii\i18n\PhpMessageSource',
-            ];
+            if (!isset($i18n->translations[$this->translateCategory])) {
+                $i18n->translations[$this->translateCategory] = [
+                    'class' => 'yii\i18n\PhpMessageSource',
+                ];
+            }
         }
     }
 
@@ -126,7 +128,9 @@ abstract class Action extends \yii\base\Action
     {
         return \Yii::$app->has('i18n')
             ? \Yii::t($this->translateCategory, $message, $params)
-            : $message;
+            : ($params
+                ? strtr($message, array_combine(array_map(function($v){return'{'.$v.'}';}, array_keys($params)), $params))
+                : $message);
     }
 
     /**
