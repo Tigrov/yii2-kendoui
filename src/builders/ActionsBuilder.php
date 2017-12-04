@@ -1,17 +1,11 @@
 <?php
-namespace tigrov\kendoui;
+namespace tigrov\kendoui\builders;
 
 use yii\helpers\ArrayHelper;
 use yii\helpers\Inflector;
 
-class KendoBuild {
-    private static $_actions = [
-        'create' => ['class' => '\tigrov\kendoui\actions\Create'],
-        'read' => ['class' => '\tigrov\kendoui\actions\Read'],
-        'update' => ['class' => '\tigrov\kendoui\actions\Update'],
-        'delete' => ['class' => '\tigrov\kendoui\actions\Delete']
-    ];
-
+class ActionsBuilder
+{
     /**
      * Create actions list for Controller::actions()
      *
@@ -27,32 +21,44 @@ class KendoBuild {
      *
      * @return array List of actions [id => settings]
      */
-    public static function actions($config)
+    public static function build($config)
     {
         if (is_string($config)) {
-            return static::mergeConfig(['model' => $config, 'actions' => static::$_actions]);
+            return static::mergeConfig(['kendoData' => $config, 'actions' => static::actions()]);
         }
 
         if (empty($config['actions'])) {
-            $config['actions'] = static::$_actions;
+            $config['actions'] = static::actions();
         } else {
             $config['actions'] = static::toAssociative($config['actions']);
+        }
+
+        if (empty($config['kendoData'])) {
+            $config['kendoData'] = ArrayHelper::filter($config, ['actions']);
         }
 
         return static::mergeConfig($config);
     }
 
+    public static function actions()
+    {
+        return [
+            'create' => ['class' => '\tigrov\kendoui\actions\Create'],
+            'read' => ['class' => '\tigrov\kendoui\actions\Read'],
+            'update' => ['class' => '\tigrov\kendoui\actions\Update'],
+            'delete' => ['class' => '\tigrov\kendoui\actions\Delete']
+        ];
+    }
+
     public static function mergeConfig($config)
     {
-        $actions = $config['actions'];
-        unset($config['actions']);
-
-        $prefix = static::actionPrefix($config);
+        $baseActions = static::actions();
+        $prefix = static::prefix($config['kendoData']);
 
         $list = [];
-        foreach ($actions as $id => $actionConfig) {
+        foreach ($config['actions'] as $id => $actionConfig) {
             if (is_array($actionConfig)) {
-                $actionPrefix = !empty($actionConfig['model']) ? static::actionPrefix($actionConfig) : $prefix;
+                $actionPrefix = !empty($actionConfig['kendoData']) ? static::prefix($actionConfig['kendoData']) : $prefix;
                 $actionId = !empty($actionConfig['id']) ? $actionConfig['id'] : $actionPrefix.$id;
                 unset($actionConfig['id']);
             } else {
@@ -60,18 +66,22 @@ class KendoBuild {
                 $actionConfig = [];
             }
 
-            $list[$actionId] = ArrayHelper::merge(static::$_actions[$id], $config, $actionConfig);
+            $list[$actionId] = ArrayHelper::merge($baseActions[$id], $config, $actionConfig);
         }
 
         return $list;
     }
 
-    public static function actionPrefix($config)
+    public static function prefix($config)
     {
-        $className = explode('\\',
-            is_string($config['model']) ? $config['model'] : $config['model']['class']
-        );
-        return Inflector::camel2id(end($className)).'-';
+        $className = is_string($config)
+            ? $config
+            : (is_string($config['model'])
+                ? $config['model']
+                : $config['model']['class']);
+
+        $shortName = (new \ReflectionClass($className))->getShortName();
+        return Inflector::camel2id($shortName) . '-';
     }
 
     public static function toAssociative($actions)

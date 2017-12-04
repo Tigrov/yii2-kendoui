@@ -15,7 +15,7 @@ class KendoShortForm extends KendoForm
     {
         $options = parent::extendOptions($attribute, $options);
 
-        $labels = $this->dataSource->getLabels();
+        $labels = $this->dataSource->getKendoData()->getLabels();
         if (!empty($labels[$attribute])) {
             $options['inputOptions']['placeholder'] = $labels[$attribute];
         }

@@ -3,8 +3,8 @@ namespace tigrov\kendoui\widgets;
 
 use Yii;
 use yii\base\InvalidCallException;
+use yii\base\Model;
 use yii\helpers\ArrayHelper;
-use yii\base\ErrorException;
 use tigrov\kendoui\DataSource;
 use yii\helpers\Html;
 
@@ -20,10 +20,6 @@ class KendoForm extends \yii\widgets\ActiveForm
      * @var DataSource
      */
     public $dataSource;
-
-    private $_actionInstance;
-
-    private $_modelInstance;
 
     /**
      * @inheritdoc
@@ -97,29 +93,17 @@ class KendoForm extends \yii\widgets\ActiveForm
         return $field->begin();
     }
 
-    public function getActionInstance()
-    {
-        if ($this->_actionInstance === null) {
-            if (!($this->dataSource instanceof DataSource)) {
-                throw new ErrorException('$this->dataSource must be instance of \tigrov\kendoui\DataSource');
-            }
-
-            $this->_actionInstance = $this->dataSource->getActionInstance();
-        }
-
-        return $this->_actionInstance;
-    }
-
     /**
      * @return \yii\db\ActiveRecord
      */
     public function getModelInstance()
     {
-        if ($this->_modelInstance === null) {
-            $this->_modelInstance = $this->getActionInstance()->getModelInstance();
+        static $model;
+        if ($model === null) {
+            $model = $this->dataSource->getKendoData()->getModelInstance();
         }
 
-        return $this->_modelInstance;
+        return $model;
     }
 
     public function extendOptions($attribute, $options)

@@ -1,7 +1,6 @@
 <?php
 namespace tigrov\kendoui\helpers;
 
-
 use yii\db\ActiveRecord;
 use yii\db\Schema;
 

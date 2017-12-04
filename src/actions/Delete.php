@@ -1,0 +1,27 @@
+<?php
+namespace tigrov\kendoui\actions;
+
+class Delete extends Action
+{
+    public function process()
+    {
+        $kendoData = $this->getKendoData();
+        $response = $kendoData->getResponse();
+        $data = $kendoData->getRequest()->getModels();
+
+        if ($data && is_array($data)) {
+            foreach ($data as $item) {
+                if ($model = $kendoData->findModel($item)) {
+                    if (!$model->delete()) {
+                        $response->addData($item);
+                        $pk = $kendoData->getKeyValue($model);
+                        $response->addError('Failed to remove the row {pk}', ['pk' => $pk]);
+                    }
+                } else {
+                    $response->addData($item);
+                    $response->addError('Model not found!');
+                }
+            }
+        }
+    }
+}

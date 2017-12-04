@@ -1,12 +1,8 @@
 <?php
 namespace tigrov\kendoui\widgets;
 
-use Yii;
-use yii\base\ErrorHandler;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
-use yii\base\Model;
-use yii\web\JsExpression;
 
 class KendoField extends \yii\widgets\ActiveField
 {

@@ -5,15 +5,14 @@ class KendoAsset extends \yii\web\AssetBundle
 {
     public $sourcePath = null;
     public $css = [
-        'http://cdn.kendostatic.com/2014.2.1008/styles/kendo.common-bootstrap.min.css',
-        'http://cdn.kendostatic.com/2014.2.1008/styles/kendo.bootstrap.min.css',
+        'http://kendo.cdn.telerik.com/2017.3.1026/styles/kendo.common-bootstrap.min.css',
+        'http://kendo.cdn.telerik.com/2017.3.1026/styles/kendo.bootstrap.min.css',
     ];
     public $js = [
-        'http://cdn.kendostatic.com/2014.2.1008/js/kendo.ui.core.min.js',
+        'http://kendo.cdn.telerik.com/2017.3.1026/js/kendo.all.min.js',
+        //'http://kendo.cdn.telerik.com/2017.3.1026/js/kendo.ui.core.min.js',
     ];
     public $depends = [
         'yii\web\JqueryAsset',
-        'yii\web\YiiAsset',
-        'yii\bootstrap\BootstrapAsset',
     ];
 } 
