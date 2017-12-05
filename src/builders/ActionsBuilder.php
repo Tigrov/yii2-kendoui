@@ -27,14 +27,15 @@ class ActionsBuilder
             return static::mergeConfig(['kendoData' => $config, 'actions' => static::actions()]);
         }
 
+        if (empty($config['kendoData'])) {
+            $config['kendoData'] = array_diff_key($config, ['actions' => '']);
+            $config = ArrayHelper::filter($config, ['kendoData', 'actions']);
+        }
+
         if (empty($config['actions'])) {
             $config['actions'] = static::actions();
         } else {
             $config['actions'] = static::toAssociative($config['actions']);
-        }
-
-        if (empty($config['kendoData'])) {
-            $config['kendoData'] = ArrayHelper::filter($config, ['actions']);
         }
 
         return static::mergeConfig($config);
