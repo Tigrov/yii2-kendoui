@@ -48,7 +48,11 @@ class Response extends Object
      */
     public function getParams($param = null)
     {
-        return $param ? $this->_params[$param] : $this->_params;
+        return $param
+            ? (isset($this->_params[$param])
+                ? $this->_params[$param]
+                : null)
+            : $this->_params;
     }
 
     public function addError($message, $params = [])
