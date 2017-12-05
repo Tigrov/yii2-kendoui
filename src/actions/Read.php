@@ -16,6 +16,7 @@ class Read extends Action {
     public function process()
     {
         $kendoData = $this->getKendoData();
+        $response = $kendoData->getResponse();
 
         $this->_queryFilter();
         $aggregates = $this->_calcAggregates();
@@ -30,7 +31,7 @@ class Read extends Action {
         $this->_querySort();
 
         $rows = $kendoData->getActiveQuery()->asArray()->all();
-        $this->data = $kendoData->getExtendMode()
+        $response->data = $kendoData->getExtendMode()
             ? $kendoData->toModelArray($rows)
             : $kendoData->filterAttributes($rows);
     }

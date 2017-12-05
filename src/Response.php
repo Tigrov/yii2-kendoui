@@ -11,15 +11,15 @@ use yii\helpers\ArrayHelper;
  * @property string $format @see \yii\web\Response::$format (default \yii\web\Response::FORMAT_JSON)
  * @property array $params key => value response parameters names specified by DataSource.schema
  * (default: data, total, errors, groups, aggregates)
- *
- * @property-read array $data data for response
+ * @property array $data data for response
  * @property-read array $errors list of errors
  */
 class Response extends Object
 {
     public $format = \yii\web\Response::FORMAT_JSON;
 
-    private $_data = [];
+    public $data = [];
+
     private $_errors = [];
 
     /**
@@ -74,17 +74,12 @@ class Response extends Object
 
     public function addData($item)
     {
-        $this->_data[] = $item;
-    }
-
-    public function getData()
-    {
-        return $this->_data;
+        $this->data[] = $item;
     }
 
     public function getResult()
     {
-        $result = [$this->getParams('data') => $this->getData()];
+        $result = [$this->getParams('data') => $this->data];
 
         if ($errors = $this->getErrors()) {
             $result[$this->getParams('errors')] = $errors;
