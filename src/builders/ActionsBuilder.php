@@ -54,10 +54,12 @@ class ActionsBuilder
     public static function mergeConfig($config)
     {
         $baseActions = static::actions();
+        $actions = $config['actions'];
+        unset($config['actions']);
         $prefix = static::prefix($config['kendoData']);
 
         $list = [];
-        foreach ($config['actions'] as $id => $actionConfig) {
+        foreach ($actions as $id => $actionConfig) {
             if (is_array($actionConfig)) {
                 $actionPrefix = !empty($actionConfig['kendoData']) ? static::prefix($actionConfig['kendoData']) : $prefix;
                 $actionId = !empty($actionConfig['id']) ? $actionConfig['id'] : $actionPrefix.$id;
