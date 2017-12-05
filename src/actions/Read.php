@@ -54,7 +54,7 @@ class Read extends Action {
         $kendoData = $this->getKendoData();
         $db = $kendoData->getModelInstance()->getDb();
         $functions = ['COUNT(*) AS ' . $db->quoteColumnName('total')];
-        if ($aggregates = ParamConverter::aggregate($kendoData->getRequest()->getData('aggregates'), $kendoData->getModelInstance())) {
+        if ($aggregates = ParamConverter::aggregate($kendoData->getRequest()->getData('aggregate'), $kendoData->getModelInstance())) {
             $functions = array_merge($functions, $aggregates);
         }
 
