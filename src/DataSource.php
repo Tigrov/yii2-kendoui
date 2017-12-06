@@ -30,6 +30,13 @@ class DataSource extends Object
     /** @var KendoData */
     private $_kendoData;
 
+    public function init()
+    {
+        if ($this->controllerId === null) {
+            $this->controllerId = \Yii::$app->controller->getUniqueId();
+        }
+    }
+
     /**
      * @param $config
      */
