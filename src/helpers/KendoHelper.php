@@ -1,7 +1,7 @@
 <?php
 namespace tigrov\kendoui\helpers;
 
-class Kendo
+class KendoHelper
 {
     /**
      * Convert list with keys to Kendo UI values list
