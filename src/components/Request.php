@@ -1,6 +1,6 @@
 <?php
 
-namespace tigrov\kendoui;
+namespace tigrov\kendoui\components;
 
 use yii\base\Object;
 

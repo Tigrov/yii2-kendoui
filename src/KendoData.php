@@ -28,8 +28,8 @@ use yii\base\Object;
  * @property-read \yii\db\ActiveRecord $modelInstance created object of the model. Result of \Yii::createObject($model)
  * @property-read \yii\db\ActiveQuery $activeQuery active query object for the model
  * Result of \Yii::configure($modelClass::find(), $query)
- * @property-read Request $request
- * @property-read Response $response
+ * @property-read \tigrov\kendoui\components\Request $request
+ * @property-read \tigrov\kendoui\components\Response $response
  */
 class KendoData extends Object
 {
@@ -88,8 +88,8 @@ class KendoData extends Object
     public function components()
     {
         return [
-            'request' => ['class' => 'tigrov\kendoui\Request'],
-            'response' => ['class' => 'tigrov\kendoui\Response'],
+            'request' => ['class' => 'tigrov\kendoui\components\Request'],
+            'response' => ['class' => 'tigrov\kendoui\components\Response'],
         ];
     }
 
