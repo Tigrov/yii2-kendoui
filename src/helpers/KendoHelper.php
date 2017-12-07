@@ -31,4 +31,4 @@ class KendoHelper
     {
         return str_replace("'", '\\u0027', $value);
     }
-} 
+}
