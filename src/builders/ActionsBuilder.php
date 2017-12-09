@@ -51,7 +51,7 @@ class ActionsBuilder
         ];
     }
 
-    public static function mergeConfig($config)
+    private static function mergeConfig($config)
     {
         $baseActions = static::actions();
         $actions = $config['actions'];
@@ -75,7 +75,7 @@ class ActionsBuilder
         return $list;
     }
 
-    public static function prefix($config)
+    private static function prefix($config)
     {
         $className = is_string($config)
             ? $config
@@ -87,7 +87,7 @@ class ActionsBuilder
         return Inflector::camel2id($shortName) . '-';
     }
 
-    public static function toAssociative($actions)
+    private static function toAssociative($actions)
     {
         $list = [];
         foreach ($actions as $id => $config) {
