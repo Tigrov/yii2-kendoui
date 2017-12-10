@@ -4,7 +4,7 @@ namespace tigrov\kendoui;
 use tigrov\kendoui\builders\KendoDataBuilder;
 use tigrov\kendoui\helpers\DataSourceHelper;
 use yii\base\InvalidConfigException;
-use yii\base\Object;
+use yii\base\BaseObject;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Url;
 
@@ -16,7 +16,7 @@ use yii\helpers\Url;
  * @property-read array $config
  */
 
-class DataSource extends Object
+class DataSource extends BaseObject implements \IteratorAggregate
 {
     /** @var array actions for generating transport object */
     public $actions = [];
@@ -176,5 +176,15 @@ class DataSource extends Object
             'extendMode' => $kendoData->getExtendMode(),
             'keySeparator' => $kendoData->keySeparator,
         ]);
+    }
+
+    /**
+     * Returns an iterator for traversing the attributes in the model.
+     * This method is required by the interface [[\IteratorAggregate]].
+     * @return \ArrayIterator an iterator for traversing the items in the list.
+     */
+    public function getIterator()
+    {
+        return new \ArrayIterator($this->getSettings());
     }
 }
