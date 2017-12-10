@@ -35,7 +35,7 @@ class DataSource extends BaseObject
     public $offlineStorage;
     public $page;
     public $sort;
-    public $type;
+    public $type = 'odata';
 
     public $transport = [];
     public $schema = [];
