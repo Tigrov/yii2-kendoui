@@ -7,15 +7,6 @@ class DataSourceHelper extends Object
 {
     const DEFAULT_KEY_SEPARATOR = '__';
 
-    const DEFAULT_CONFIG = [
-        'batch' => true,
-        'serverFiltering' => true,
-        'serverSorting' => true,
-        'serverPaging' => true,
-        'serverAggregates' => true,
-        'pageSize' => 20,
-    ];
-
     const DEFAULT_TRANSPORT_CONFIG = [
         'dataType' => 'json',
         'type' => 'POST',

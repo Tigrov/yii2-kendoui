@@ -5,7 +5,6 @@ use tigrov\kendoui\builders\KendoDataBuilder;
 use tigrov\kendoui\helpers\DataSourceHelper;
 use yii\base\InvalidConfigException;
 use yii\base\BaseObject;
-use yii\helpers\ArrayHelper;
 use yii\helpers\Url;
 
 /**
@@ -13,44 +12,59 @@ use yii\helpers\Url;
  * @package tigrov\kendoui
  *
  * @property array $actions
- * @property-read array $config
+ * @property string $controllerId
+ * @property KendoData $kendoData
  */
 
-class DataSource extends BaseObject implements \IteratorAggregate
+class DataSource extends BaseObject
 {
+    public $batch = true;
+    public $serverFiltering = true;
+    public $serverSorting = true;
+    public $serverPaging = true;
+    public $serverAggregates = true;
+    public $pageSize = 20;
+
+    public $transport;
+    public $schema;
+
     /** @var array actions for generating transport object */
-    public $actions = [];
+    private $_actions = [];
 
     /** @var string Controller ID for generating transport urls */
-    public $controllerId;
-
-    /** @var array config for DataSource object */
-    private $_config = DataSourceHelper::DEFAULT_CONFIG;
+    private $_controllerId;
 
     /** @var KendoData */
     private $_kendoData;
 
     public function init()
     {
-        if ($this->controllerId === null) {
-            $this->controllerId = \Yii::$app->controller->getUniqueId();
+        if ($this->getControllerId() === null) {
+            $this->setControllerId(\Yii::$app->controller->getUniqueId());
         }
+
+        $this->transport = $this->getTransport();
+        $this->schema = $this->getSchema();
     }
 
-    /**
-     * @param $config
-     */
-    public function setConfig($config)
+    public function setActions($value)
     {
-        $this->_config = array_merge($this->_config, $config);
+        $this->_actions = $value;
     }
 
-    /**
-     * @return array
-     */
-    public function getConfig()
+    public function getActions()
     {
-        return $this->_config;
+        return $this->_actions;
+    }
+
+    public function setControllerId($value)
+    {
+        $this->_controllerId = $value;
+    }
+
+    public function getControllerId()
+    {
+        return $this->_controllerId;
     }
 
     public function setKendoData($config)
@@ -68,7 +82,7 @@ class DataSource extends BaseObject implements \IteratorAggregate
             $actions = $this->getTransportActions();
             foreach (['read', 'create', 'update', 'destroy'] as $key) {
                 if (isset($actions[$key])) {
-                    $this->_kendoData = KendoDataBuilder::build($this->actions[$actions[$key]]['kendoData']);
+                    $this->_kendoData = KendoDataBuilder::build($this->getActions()[$actions[$key]]['kendoData']);
                     break;
                 }
             }
@@ -82,24 +96,6 @@ class DataSource extends BaseObject implements \IteratorAggregate
     }
 
     /**
-     * Settings for DataSource object
-     *
-     * @return array
-     */
-    public function getSettings()
-    {
-        static $result;
-        if ($result === null) {
-            $result = ArrayHelper::merge([
-                'transport' => $this->getTransport(),
-                'schema' => $this->getSchema(),
-            ], $this->getConfig());
-        }
-
-        return $result;
-    }
-
-    /**
      * Settings for transport object
      *
      * @return array
@@ -109,7 +105,7 @@ class DataSource extends BaseObject implements \IteratorAggregate
         $transport = [];
         foreach ($this->getTransportActions() as $key => $actionId) {
             $transport[$key] = DataSourceHelper::DEFAULT_TRANSPORT_CONFIG;
-            $transport[$key]['url'] = Url::to([$this->controllerId . '/' . $actionId]);
+            $transport[$key]['url'] = Url::to([$this->getControllerId() . '/' . $actionId]);
         }
 
         return $transport;
@@ -120,7 +116,7 @@ class DataSource extends BaseObject implements \IteratorAggregate
         static $result;
         if ($result === null) {
             $result = [];
-            foreach ($this->actions as $actionId => $settings) {
+            foreach ($this->getActions() as $actionId => $settings) {
                 if ($key = static::transportKey($settings['class'])) {
                     $result[$key] = $actionId;
                 }
@@ -176,15 +172,5 @@ class DataSource extends BaseObject implements \IteratorAggregate
             'extendMode' => $kendoData->getExtendMode(),
             'keySeparator' => $kendoData->keySeparator,
         ]);
-    }
-
-    /**
-     * Returns an iterator for traversing the attributes in the model.
-     * This method is required by the interface [[\IteratorAggregate]].
-     * @return \ArrayIterator an iterator for traversing the items in the list.
-     */
-    public function getIterator()
-    {
-        return new \ArrayIterator($this->getSettings());
     }
 }
