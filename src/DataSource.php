@@ -142,7 +142,7 @@ class DataSource extends BaseObject
     public static function transportKey($actionClass)
     {
         foreach (DataSourceHelper::actions() as $key => $action) {
-            if ($actionClass instanceof $action['class']) {
+            if (is_a($actionClass, $action['class'], true)) {
                 return $key;
             }
         }
