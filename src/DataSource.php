@@ -91,10 +91,11 @@ class DataSource extends BaseObject
     public function getKendoData()
     {
         if ($this->_kendoData === null) {
-            $actions = $this->getTransportActions();
+            $actions = $this->getActions();
+            $transportActions = $this->getTransportActions();
             foreach (['read', 'create', 'update', 'destroy'] as $key) {
-                if (isset($actions[$key])) {
-                    $this->_kendoData = KendoDataBuilder::build($this->getActions()[$actions[$key]]['kendoData']);
+                if (isset($transportActions[$key])) {
+                    $this->_kendoData = KendoDataBuilder::build($actions[$transportActions[$key]]['kendoData']);
                     break;
                 }
             }
