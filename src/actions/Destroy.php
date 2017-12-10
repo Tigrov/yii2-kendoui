@@ -1,7 +1,7 @@
 <?php
 namespace tigrov\kendoui\actions;
 
-class Delete extends Action
+class Destroy extends Action
 {
     public function process()
     {

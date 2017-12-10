@@ -1,6 +1,7 @@
 <?php
 namespace tigrov\kendoui\builders;
 
+use tigrov\kendoui\helpers\DataSourceHelper;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Inflector;
 
@@ -12,7 +13,7 @@ class ActionsBuilder
      * @param $config array|string Configuration for creating action list.
      * If $config is string then $config is using as modelClass.
      * If $config is array then it must contain settings for each action.
-     * Also $config might contain list of action types ['actions' => ['create', 'read', 'update', 'delete']]
+     * Also $config might contain list of action types ['actions' => ['create', 'read', 'update', 'destroy']]
      * and individual config for each action ['actions' => ['create' => ['model' => 'ClassName'], 'read']],
      * in the last example will have created list with two action types 'create' and 'read'.
      * Id for each action will have generated from "model class name" as prefix and type name as suffix "class-name-create".
@@ -24,7 +25,7 @@ class ActionsBuilder
     public static function build($config)
     {
         if (is_string($config)) {
-            return static::mergeConfig(['kendoData' => $config, 'actions' => static::actions()]);
+            return static::mergeConfig(['kendoData' => $config, 'actions' => DataSourceHelper::actions()]);
         }
 
         if (empty($config['kendoData'])) {
@@ -33,7 +34,7 @@ class ActionsBuilder
         }
 
         if (empty($config['actions'])) {
-            $config['actions'] = static::actions();
+            $config['actions'] = DataSourceHelper::actions();
         } else {
             $config['actions'] = static::toAssociative($config['actions']);
         }
@@ -41,19 +42,9 @@ class ActionsBuilder
         return static::mergeConfig($config);
     }
 
-    public static function actions()
-    {
-        return [
-            'create' => ['class' => '\tigrov\kendoui\actions\Create'],
-            'read' => ['class' => '\tigrov\kendoui\actions\Read'],
-            'update' => ['class' => '\tigrov\kendoui\actions\Update'],
-            'delete' => ['class' => '\tigrov\kendoui\actions\Delete']
-        ];
-    }
-
     private static function mergeConfig($config)
     {
-        $baseActions = static::actions();
+        $baseActions = DataSourceHelper::actions();
         $actions = $config['actions'];
         unset($config['actions']);
         $prefix = static::prefix($config['kendoData']);

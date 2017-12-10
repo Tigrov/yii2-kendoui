@@ -1,9 +1,9 @@
 <?php
 namespace tigrov\kendoui\helpers;
 
-use yii\base\Object;
+use yii\base\BaseObject;
 
-class DataSourceHelper extends Object
+class DataSourceHelper extends BaseObject
 {
     const DEFAULT_KEY_SEPARATOR = '__';
 
@@ -11,6 +11,16 @@ class DataSourceHelper extends Object
         'dataType' => 'json',
         'type' => 'POST',
     ];
+
+    public static function actions()
+    {
+        return [
+            'create' => ['class' => '\tigrov\kendoui\actions\Create'],
+            'read' => ['class' => '\tigrov\kendoui\actions\Read'],
+            'update' => ['class' => '\tigrov\kendoui\actions\Update'],
+            'destroy' => ['class' => '\tigrov\kendoui\actions\Destroy']
+        ];
+    }
 
     /**
      * Static method: Settings for schema object

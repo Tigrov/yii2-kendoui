@@ -141,19 +141,10 @@ class DataSource extends BaseObject
 
     public static function transportKey($actionClass)
     {
-        $createClass = 'tigrov\kendoui\actions\Create';
-        $readClass = 'tigrov\kendoui\actions\Read';
-        $updateClass = 'tigrov\kendoui\actions\Update';
-        $deleteClass = 'tigrov\kendoui\actions\Delete';
-
-        if ($actionClass instanceof $createClass) {
-            return 'create';
-        } elseif ($actionClass instanceof $readClass) {
-            return 'read';
-        } elseif ($actionClass instanceof $updateClass) {
-            return 'update';
-        } elseif ($actionClass instanceof $deleteClass) {
-            return 'destroy';
+        foreach (DataSourceHelper::actions() as $key => $action) {
+            if ($actionClass instanceof $action['class']) {
+                return $key;
+            }
         }
 
         return null;
