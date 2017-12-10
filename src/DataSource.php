@@ -5,6 +5,7 @@ use tigrov\kendoui\builders\KendoDataBuilder;
 use tigrov\kendoui\helpers\DataSourceHelper;
 use yii\base\InvalidConfigException;
 use yii\base\BaseObject;
+use yii\helpers\ArrayHelper;
 use yii\helpers\Url;
 
 /**
@@ -18,15 +19,26 @@ use yii\helpers\Url;
 
 class DataSource extends BaseObject
 {
+    public $pageSize = 20;
     public $batch = true;
     public $serverFiltering = true;
     public $serverSorting = true;
     public $serverPaging = true;
     public $serverAggregates = true;
-    public $pageSize = 20;
+    public $serverGrouping = false;
+    public $aggregate;
+    public $autoSync = false;
+    public $data;
+    public $filter;
+    public $group;
+    public $inPlaceSort = false;
+    public $offlineStorage;
+    public $page;
+    public $sort;
+    public $type;
 
-    public $transport;
-    public $schema;
+    public $transport = [];
+    public $schema = [];
 
     /** @var array actions for generating transport object */
     private $_actions = [];
@@ -43,8 +55,8 @@ class DataSource extends BaseObject
             $this->setControllerId(\Yii::$app->controller->getUniqueId());
         }
 
-        $this->transport = $this->getTransport();
-        $this->schema = $this->getSchema();
+        $this->transport = ArrayHelper::merge($this->getTransport(), $this->transport);
+        $this->schema = ArrayHelper::merge($this->getSchema(), $this->schema);
     }
 
     public function setActions($value)
