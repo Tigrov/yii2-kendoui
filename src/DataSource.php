@@ -25,17 +25,17 @@ class DataSource extends BaseObject
     public $serverSorting = true;
     public $serverPaging = true;
     public $serverAggregates = true;
-    public $serverGrouping = false;
+    public $serverGrouping;
     public $aggregate;
-    public $autoSync = false;
+    public $autoSync;
     public $data;
     public $filter;
     public $group;
-    public $inPlaceSort = false;
+    public $inPlaceSort;
     public $offlineStorage;
     public $page;
     public $sort;
-    public $type = 'odata';
+    public $type;
 
     public $transport = [];
     public $schema = [];
@@ -118,7 +118,7 @@ class DataSource extends BaseObject
         $transport = [];
         foreach ($this->getTransportActions() as $key => $actionId) {
             $transport[$key] = DataSourceHelper::DEFAULT_TRANSPORT_CONFIG;
-            $transport[$key]['url'] = Url::to([$this->getControllerId() . '/' . $actionId]);
+            $transport[$key]['url'] = Url::to(['/' . $this->getControllerId() . '/' . $actionId]);
         }
 
         return $transport;
