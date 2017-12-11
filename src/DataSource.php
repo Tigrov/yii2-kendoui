@@ -19,64 +19,61 @@ use yii\helpers\Url;
 
 class DataSource extends BaseObject
 {
-    public $pageSize = 20;
-    public $batch = true;
-    public $serverFiltering = true;
-    public $serverSorting = true;
-    public $serverPaging = true;
-    public $serverAggregates = true;
-    public $serverGrouping;
-    public $aggregate;
-    public $autoSync;
-    public $data;
-    public $filter;
-    public $group;
-    public $inPlaceSort;
-    public $offlineStorage;
-    public $page;
-    public $sort;
-    public $type;
-
-    public $transport = [];
-    public $schema = [];
-
     /** @var array actions for generating transport object */
-    private $_actions = [];
+    public $actions = [];
 
     /** @var string Controller ID for generating transport urls */
-    private $_controllerId;
+    public $controllerId;
 
     /** @var KendoData */
     private $_kendoData;
 
+    /** @var array config for DataSource object */
+    private $_config = DataSourceHelper::DEFAULT_CONFIG;
+
     public function init()
     {
-        if ($this->getControllerId() === null) {
-            $this->setControllerId(\Yii::$app->controller->getUniqueId());
+        if ($this->controllerId === null) {
+            $this->controllerId = \Yii::$app->controller->getUniqueId();
         }
 
-        $this->transport = ArrayHelper::merge($this->getTransport(), $this->transport);
-        $this->schema = ArrayHelper::merge($this->getSchema(), $this->schema);
+        $this->_config = ArrayHelper::merge(
+            ['transport' => $this->getTransport(), 'schema' => $this->getSchema()],
+            $this->_config
+        );
     }
 
-    public function setActions($value)
+    public function __get($name)
     {
-        $this->_actions = $value;
+        if (in_array($name, DataSourceHelper::PARAMS)) {
+            return isset($this->_config[$name])
+                ? $this->_config[$name]
+                : null;
+        }
+
+        return parent::__get($name);
     }
 
-    public function getActions()
+    public function __set($name, $value)
     {
-        return $this->_actions;
+        if (in_array($name, DataSourceHelper::PARAMS)) {
+            $this->_config[$name] = $value;
+        }
+
+        parent::__set($name, $value);
     }
 
-    public function setControllerId($value)
+    /**
+     * @return array
+     */
+    public function toArray()
     {
-        $this->_controllerId = $value;
+        return array_filter($this->_config);
     }
 
-    public function getControllerId()
+    public function toJSON()
     {
-        return $this->_controllerId;
+        return json_encode($this->toArray());
     }
 
     public function setKendoData($config)
@@ -91,11 +88,10 @@ class DataSource extends BaseObject
     public function getKendoData()
     {
         if ($this->_kendoData === null) {
-            $actions = $this->getActions();
             $transportActions = $this->getTransportActions();
             foreach (['read', 'create', 'update', 'destroy'] as $key) {
                 if (isset($transportActions[$key])) {
-                    $this->_kendoData = KendoDataBuilder::build($actions[$transportActions[$key]]['kendoData']);
+                    $this->_kendoData = KendoDataBuilder::build($this->actions[$transportActions[$key]]['kendoData']);
                     break;
                 }
             }
@@ -118,7 +114,7 @@ class DataSource extends BaseObject
         $transport = [];
         foreach ($this->getTransportActions() as $key => $actionId) {
             $transport[$key] = DataSourceHelper::DEFAULT_TRANSPORT_CONFIG;
-            $transport[$key]['url'] = Url::to(['/' . $this->getControllerId() . '/' . $actionId]);
+            $transport[$key]['url'] = Url::to(['/' . $this->controllerId . '/' . $actionId]);
         }
 
         return $transport;
@@ -129,7 +125,7 @@ class DataSource extends BaseObject
         static $result;
         if ($result === null) {
             $result = [];
-            foreach ($this->getActions() as $actionId => $settings) {
+            foreach ($this->actions as $actionId => $settings) {
                 if ($key = static::transportKey($settings['class'])) {
                     $result[$key] = $actionId;
                 }

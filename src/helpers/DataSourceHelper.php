@@ -7,9 +7,24 @@ class DataSourceHelper extends BaseObject
 {
     const DEFAULT_KEY_SEPARATOR = '__';
 
+    const DEFAULT_CONFIG = [
+        'batch' => true,
+        'serverFiltering' => true,
+        'serverSorting' => true,
+        'serverPaging' => true,
+        'serverAggregates' => true,
+        'pageSize' => 20,
+    ];
+
     const DEFAULT_TRANSPORT_CONFIG = [
         'dataType' => 'json',
         'type' => 'POST',
+    ];
+
+    const PARAMS = [
+        'aggregate', 'autoSync', 'batch', 'data', 'filter', 'group', 'inPlaceSort', 'offlineStorage',
+        'page', 'pageSize', 'serverAggregates', 'serverFiltering', 'serverGrouping', 'serverPaging',
+        'serverSorting', 'sort', 'type', 'transport', 'schema'
     ];
 
     public static function actions()
