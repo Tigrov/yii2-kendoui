@@ -19,7 +19,7 @@ or add
 
 `"tigrov/yii2-kendoui": "2.x-dev"`
  
- to the require section of your composer.json file.
+ to the require section of your `composer.json` file.
 
 How to use?
 ------------
