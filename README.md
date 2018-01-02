@@ -6,7 +6,20 @@ Currently implemented DataSource which generating on ActiveRecord model-base.
 Can be used with:
 * Kendo Grid
 * Kendo List
-* other features which requiring DataSources
+* other features that require DataSources
+
+Installation
+------------
+
+To try the new version of yii2-kendoui either run
+ 
+`php composer.phar require tigrov/yii2-kendoui:2.x-dev`
+
+or add
+
+`"tigrov/yii2-kendoui": "2.x-dev"`
+ 
+ to the require section of your composer.json file.
 
 How to use?
 ------------
