@@ -16,10 +16,10 @@ use yii\helpers\ArrayHelper;
 class BaseDataSource extends BaseObject
 {
     /** @var KendoData */
-    private $_kendoData;
+    protected $_kendoData;
 
     /** @var array config for DataSource object */
-    private $_config = [
+    protected $_config = [
         'pageSize' => 20,
     ];
 
