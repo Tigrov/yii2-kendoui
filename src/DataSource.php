@@ -29,7 +29,7 @@ class DataSource extends BaseDataSource
     public $controllerId;
 
     /** @var array config for DataSource object */
-    private $_config = [
+    protected $_config = [
         'batch' => true,
         'serverFiltering' => true,
         'serverSorting' => true,
