@@ -4,19 +4,18 @@ namespace tigrov\kendoui;
 use tigrov\kendoui\builders\KendoDataBuilder;
 use yii\base\InvalidConfigException;
 use yii\helpers\ArrayHelper;
-use yii\db\ActiveRecord;
 
 /**
  * Class DataSource
  * @package tigrov\kendoui
  *
- * @property ActiveRecord[] $models
+ * @property \yii\db\ActiveRecord[] $models
  */
 
 class DataSourceData extends BaseDataSource
 {
-    /** @var ActiveRecord[] */
-    public $models = [];
+    /** @var \yii\db\ActiveRecord[]|array|null list of models or models' rows to be converted in DataSource.data */
+    public $models;
 
     public function init()
     {
@@ -30,9 +29,11 @@ class DataSourceData extends BaseDataSource
 
     public function setKendoData($config = [])
     {
-        if (!is_string($config) && empty($config['model'])) {
+        if (is_array($config) && empty($config['model']) && $this->models) {
             $model = reset($this->models);
-            $config['model'] = $model::className();
+            if ($model instanceof \yii\db\ActiveRecord) {
+                $config['model'] = $model::className();
+            }
         }
         $this->_kendoData = KendoDataBuilder::build($config);
     }
@@ -52,12 +53,22 @@ class DataSourceData extends BaseDataSource
 
     public function getData()
     {
-        $list = [];
+        $data = [];
         $kendoData = $this->getKendoData();
-        foreach ($this->models as $model) {
-            $list[] = $kendoData->getModelData($model);
+        if ($this->models && reset($this->models) instanceof \yii\db\ActiveRecord) {
+            foreach ($this->models as $model) {
+                $data[] = $kendoData->getModelData($model);
+            }
+        } else {
+            $rows = $this->models && is_array(reset($this->models))
+                ? $this->models
+                : $kendoData->getActiveQuery()->asArray()->all();
+
+            $data = $kendoData->getExtendMode()
+                ? $kendoData->toModelArray($rows)
+                : $kendoData->filterAttributes($rows);
         }
 
-        return $list;
+        return $data;
     }
 }
