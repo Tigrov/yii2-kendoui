@@ -17,11 +17,6 @@ use yii\helpers\Url;
 
 class DataSource extends BaseDataSource
 {
-    const DEFAULT_TRANSPORT_CONFIG = [
-        'dataType' => 'json',
-        'type' => 'POST',
-    ];
-
     /** @var array actions for generating transport object */
     public $actions = [];
 
@@ -38,6 +33,11 @@ class DataSource extends BaseDataSource
         'pageSize' => 20,
     ];
 
+    protected $_transportConfig = [
+        'dataType' => 'json',
+        'type' => 'POST',
+    ];
+
     public function init()
     {
         parent::init();
@@ -50,6 +50,16 @@ class DataSource extends BaseDataSource
             ['transport' => $this->getTransport()],
             $this->_config
         );
+    }
+
+    public function setTransportConfig($config)
+    {
+        $this->_transportConfig = array_merge($this->_transportConfig, $config);
+    }
+
+    public function getTransportConfig()
+    {
+        return $this->_transportConfig;
     }
 
     /**
@@ -84,7 +94,7 @@ class DataSource extends BaseDataSource
     {
         $transport = [];
         foreach ($this->getTransportActions() as $key => $actionId) {
-            $transport[$key] = static::DEFAULT_TRANSPORT_CONFIG;
+            $transport[$key] = $this->getTransportConfig();
             $transport[$key]['url'] = Url::to(['/' . $this->controllerId . '/' . $actionId]);
         }
 
