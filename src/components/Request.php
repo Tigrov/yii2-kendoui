@@ -2,7 +2,7 @@
 
 namespace tigrov\kendoui\components;
 
-use yii\base\Object;
+use yii\base\BaseObject;
 
 /**
  * Class Request
@@ -13,7 +13,7 @@ use yii\base\Object;
  *
  * @property-read array $models
  */
-class Request extends Object
+class Request extends BaseObject
 {
     private $_data;
 

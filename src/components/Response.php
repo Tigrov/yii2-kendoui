@@ -2,7 +2,7 @@
 
 namespace tigrov\kendoui\components;
 
-use yii\base\Object;
+use yii\base\BaseObject;
 use yii\helpers\ArrayHelper;
 
 /**
@@ -14,7 +14,7 @@ use yii\helpers\ArrayHelper;
  * @property array $data data for response
  * @property-read array $errors list of errors
  */
-class Response extends Object
+class Response extends BaseObject
 {
     public $format = \yii\web\Response::FORMAT_JSON;
 

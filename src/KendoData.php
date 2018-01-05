@@ -4,7 +4,7 @@ namespace tigrov\kendoui;
 
 use tigrov\kendoui\helpers\DataSourceHelper;
 use yii\base\InvalidConfigException;
-use yii\base\Object;
+use yii\base\BaseObject;
 
 /**
  * Class KendoData
@@ -17,7 +17,7 @@ use yii\base\Object;
  * @property string[] $exceptAttributes names of attributes that must be excepted from result (default empty)
  * @property string[] $extraFields additional fields from ActiveRecord::extraFields() (default empty)
  * @property string $keySeparator multiple key separator (default "__")
- * @property boolean $extendMode indicates the mode of model data read.
+ * @property bool $extendMode indicates the mode of model data read.
  * If true reading data from ActiveRecord::toArray() else from ActiveRecord::getAttributes().
  * Use true if your KendoUI DataSource field names from ActiveRecord::fields() is not equal to db attribute names
  * or you are using extra fields. (default false)
@@ -31,7 +31,7 @@ use yii\base\Object;
  * @property-read \tigrov\kendoui\components\Request $request
  * @property-read \tigrov\kendoui\components\Response $response
  */
-class KendoData extends Object
+class KendoData extends BaseObject
 {
     public $model;
     public $query;
@@ -57,10 +57,10 @@ class KendoData extends Object
     /** @var \yii\db\ActiveQuery */
     private $_activeQuery;
 
-    /** @var Request */
+    /** @var \tigrov\kendoui\components\Request */
     private $_request;
 
-    /** @var Response */
+    /** @var \tigrov\kendoui\components\Response */
     private $_response;
 
     public function __construct($config = [])
@@ -99,7 +99,7 @@ class KendoData extends Object
     }
 
     /**
-     * @return Request
+     * @return \tigrov\kendoui\components\Request
      */
     public function getRequest()
     {

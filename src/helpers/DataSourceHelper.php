@@ -1,9 +1,7 @@
 <?php
 namespace tigrov\kendoui\helpers;
 
-use yii\base\BaseObject;
-
-class DataSourceHelper extends BaseObject
+class DataSourceHelper
 {
     const DEFAULT_KEY_SEPARATOR = '__';
 
