@@ -114,6 +114,9 @@ class DataSourceHelper
             if ($model->$field !== null) {
                 $result['fields'][$field]['defaultValue'] = $model->$field;
             }
+            if (!$model->canSetProperty($field)) {
+                $result['fields'][$field]['editable'] = false;
+            }
         }
 
         return $result;
