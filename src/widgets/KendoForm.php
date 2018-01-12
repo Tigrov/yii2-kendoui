@@ -46,6 +46,14 @@ class KendoForm extends \yii\widgets\ActiveForm
     }
 
     /**
+     * @inheritdoc
+     */
+    public function field($model, $attribute, $options = [])
+    {
+        return $this->kendoField($attribute, $options, $model);
+    }
+
+    /**
      * Generates a form field.
      * A form field is associated with a model and an attribute. It contains a label, an input and an error message
      * and use them to interact with end users to collect their inputs for the attribute.
@@ -73,14 +81,6 @@ class KendoForm extends \yii\widgets\ActiveForm
             'attribute' => $attribute,
             'form' => $this,
         ]));
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function field($model, $attribute, $options = [])
-    {
-        return $this->kendoField($attribute, $options, $model);
     }
 
     /**
