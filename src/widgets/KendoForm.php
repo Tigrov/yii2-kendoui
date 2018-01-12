@@ -56,9 +56,9 @@ class KendoForm extends \yii\widgets\ActiveForm
      * @return KendoField the created ActiveField object
      * @see fieldConfig
      */
-    public function kendoField($attribute, $options = [])
+    public function kendoField($attribute, $options = [], $model = null)
     {
-        $model = $this->getModelInstance();
+        $model = $model ?: $this->getModelInstance();
         $config = $this->fieldConfig;
         if ($config instanceof \Closure) {
             $config = call_user_func($config, $model, $attribute);
@@ -73,6 +73,14 @@ class KendoForm extends \yii\widgets\ActiveForm
             'attribute' => $attribute,
             'form' => $this,
         ]));
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function field($model, $attribute, $options = [])
+    {
+        return $this->kendoField($attribute, $options, $model);
     }
 
     /**
@@ -118,7 +126,7 @@ class KendoForm extends \yii\widgets\ActiveForm
 
     public function expandOptionsType($attribute, $options)
     {
-        $dataSource = $this->dataSource->getSettings();
+        $dataSource = $this->dataSource->toArray();
         $columns = $this->getModelInstance()->getTableSchema()->columns;
         if (isset($dataSource['schema']['model']['fields'][$attribute]['type'])) {
             $options['inputOptions']['data-type'] = $dataSource['schema']['model']['fields'][$attribute]['type'];
@@ -135,7 +143,7 @@ class KendoForm extends \yii\widgets\ActiveForm
 
     public function expandOptionsValidation($attribute, $options)
     {
-        $dataSource = $this->dataSource->getSettings();
+        $dataSource = $this->dataSource->toArray();
         if (!empty($dataSource['schema']['model']['fields'][$attribute]['validation'])) {
             $validation = $dataSource['schema']['model']['fields'][$attribute]['validation'];
 
