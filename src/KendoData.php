@@ -259,12 +259,12 @@ class KendoData extends BaseObject
      */
     public function getAttributes($autoFill = false)
     {
-        $attributes = !$autoFill && !$this->exceptAttributes || $this->attributeNames
+        $attributes = $this->attributeNames || !$autoFill && !$this->exceptAttributes
             ? $this->attributeNames
             : $this->getModelInstance()->attributes();
 
         if ($this->exceptAttributes) {
-            return array_diff($attributes, $this->exceptAttributes);
+            $attributes = array_diff($attributes, $this->exceptAttributes);
         }
 
         return $attributes;
