@@ -3,6 +3,7 @@ namespace tigrov\kendoui\widgets;
 
 use Yii;
 use yii\base\InvalidCallException;
+use yii\base\InvalidConfigException;
 use yii\base\Model;
 use yii\helpers\ArrayHelper;
 use tigrov\kendoui\DataSource;
@@ -17,6 +18,13 @@ class KendoForm extends \yii\widgets\ActiveForm
     public $fieldClass = 'tigrov\kendoui\widgets\KendoField';
 
     /**
+     * @var string the form layout. Either 'default' or 'inline'.
+     * By choosing a layout, an appropriate default field configuration is applied. This will
+     * render the form fields with slightly different markup for each layout.
+     */
+    public $layout = 'default';
+
+    /**
      * @var DataSource
      */
     public $dataSource;
@@ -26,6 +34,14 @@ class KendoForm extends \yii\widgets\ActiveForm
      */
     public function init()
     {
+        if (!in_array($this->layout, ['default', 'inline'])) {
+            throw new InvalidConfigException('Invalid layout type: ' . $this->layout);
+        }
+
+        if ($this->layout === 'inline' && !isset($this->fieldConfig['template'])) {
+            $this->fieldConfig['template'] = '{input}{hint}';
+        }
+
         if (!isset($this->options['id'])) {
             $this->options['id'] = $this->getId();
         }
@@ -120,6 +136,13 @@ class KendoForm extends \yii\widgets\ActiveForm
         $options = $this->expandOptionsValidation($attribute, $options);
 
         $options['inputOptions']['data-bind'] = 'value:' . $attribute;
+
+        if ($this->layout === 'inline') {
+            $labels = $this->dataSource->getKendoData()->getLabels();
+            if (!empty($labels[$attribute])) {
+                $options['inputOptions']['placeholder'] = $labels[$attribute];
+            }
+        }
 
         return $options;
     }
