@@ -63,16 +63,20 @@ class DataSource extends BaseDataSource
     }
 
     /**
+     * @param array|string $config
      * @return KendoData
      * @throws InvalidConfigException
      */
-    public function getKendoData()
+    public function getKendoData($config = [])
     {
         if ($this->_kendoData === null) {
+            if ($config && is_string($config)) {
+                $config = ['model' => ['class' => $config]];
+            }
             $transportActions = $this->getTransportActions();
             foreach (['read', 'create', 'update', 'destroy'] as $key) {
                 if (isset($transportActions[$key])) {
-                    $this->_kendoData = KendoDataBuilder::build($this->actions[$transportActions[$key]]['kendoData']);
+                    $this->_kendoData = KendoDataBuilder::build(ArrayHelper::merge($this->actions[$transportActions[$key]]['kendoData'], $config));
                     break;
                 }
             }
@@ -83,6 +87,17 @@ class DataSource extends BaseDataSource
         }
 
         return $this->_kendoData;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setKendoData($config)
+    {
+        $className = KendoDataBuilder::CLASS_NAME;
+        $this->_kendoData = $config instanceof $className
+            ? $config
+            : $this->getKendoData($config);
     }
 
     /**
