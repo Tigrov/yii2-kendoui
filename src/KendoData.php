@@ -63,6 +63,9 @@ class KendoData extends BaseObject
     /** @var \tigrov\kendoui\components\Response */
     private $_response;
 
+    /** @var array */
+    private $_labels;
+
     public function __construct($config = [])
     {
         $this->preInit($config);
