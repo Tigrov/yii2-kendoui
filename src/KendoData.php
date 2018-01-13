@@ -35,7 +35,7 @@ class KendoData extends BaseObject
 {
     public $model;
     public $query;
-    public $attributeNames = [];
+    public $attributeNames;
     public $exceptAttributes = [];
     public $extraFields = [];
     public $keySeparator = DataSourceHelper::DEFAULT_KEY_SEPARATOR;
@@ -209,7 +209,7 @@ class KendoData extends BaseObject
     public function getModelData($model)
     {
         $data = $this->getExtendMode()
-            ? $model->toArray($this->getAttributes(), $this->extraFields)
+            ? $model->toArray($this->getAttributes() ?: [], $this->extraFields)
             : $model->getAttributes($this->attributeNames, $this->exceptAttributes);
 
         $pk = $this->getKeyField();
@@ -259,7 +259,7 @@ class KendoData extends BaseObject
      */
     public function getAttributes($autoFill = false)
     {
-        $attributes = $this->attributeNames || !$autoFill && !$this->exceptAttributes
+        $attributes = $this->attributeNames !== null || !$autoFill && !$this->exceptAttributes
             ? $this->attributeNames
             : $this->getModelInstance()->attributes();
 
@@ -272,7 +272,7 @@ class KendoData extends BaseObject
 
     public function toModelArray($rows)
     {
-        $attributes = $this->getAttributes();
+        $attributes = $this->getAttributes() ?: [];
         $extraFields = $this->extraFields;
         $pk = $this->getKeyField();
 
