@@ -210,7 +210,7 @@ class KendoData extends BaseObject
     {
         $data = $this->getExtendMode()
             ? $model->toArray($this->getAttributes() ?: [], $this->extraFields)
-            : $model->getAttributes($this->attributeNames, $this->exceptAttributes);
+            : $model->getAttributes($this->attributeNames ?: null, $this->exceptAttributes);
 
         $pk = $this->getKeyField();
         if (empty($data[$pk])) {
