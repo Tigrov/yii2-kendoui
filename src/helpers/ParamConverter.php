@@ -85,83 +85,113 @@ class ParamConverter
         }
 
         if (!empty($filter['filters']) && is_array($filter['filters'])) {
-            $logic = in_array($filter['logic'], ['or', 'and'], true) ? $filter['logic'] : static::DEFAULT_FILTER_LOGIC;
-
-            $where = [];
-            foreach ($filter['filters'] as $flt) {
-                if ($condition = static::filter($flt, $model)) {
-                    $where[] = $condition;
-                }
-            }
-
-            if (count($where) > 1) {
-                array_unshift($where, $logic);
-            } else {
-                $where = $where ? $where[0] : null;
-            }
-
-            return $where;
+            return static::filterFilters();
         }
 
-        $columns = $model->getTableSchema()->columns;
+        $columns = $model::getTableSchema()->columns;
         if (!empty($filter['field']) && isset($columns[$filter['field']])
             && isset($filter['value']) && !empty($filter['operator'])
         ) {
-            $db = $model->getDb();
-            $tableName = $model::tableName();
-            $attribute = $tableName . '.' . $filter['field'];
-            $type = $columns[$filter['field']]->type;
-
             $numberOperators = static::NUMBER_OPERATORS;
             if (isset($numberOperators[$filter['operator']])) {
-                $operator = $numberOperators[$filter['operator']];
-                $value = static::parseDate($filter['value']);
-                if ($value) {
-                    if (in_array($type, [Schema::TYPE_INTEGER, Schema::TYPE_BIGINT])) {
-                        $fromUnixtime = $db->driverName == 'pgsql' ? 'TO_TIMESTAMP' : 'FROM_UNIXTIME';
-                        $attribute = 'DATE(' . $fromUnixtime . '(' . $db->quoteColumnName($attribute) . '))';
-                    } elseif (in_array($type, [Schema::TYPE_TIMESTAMP, Schema::TYPE_DATE, Schema::TYPE_DATETIME, Schema::TYPE_TIME])) {
-                        $attribute = 'DATE(' . $db->quoteColumnName($attribute) . ')';
-                    } else {
-                        $value = null;
-                    }
-                }
-
-                if ($value === null) {
-                    if (is_numeric($filter['value'])) {
-                        $value = (float)$filter['value'];
-                    } elseif (in_array($filter['value'], ['true', 'false'])) {
-                        $operator = $filter['value'] == 'false'
-                            ? $numberOperators['eq']
-                            : $numberOperators['neq'];
-                        $value = 0;
-                    }
-                }
-
-                if ($value !== null) {
-                    return [$operator, $attribute, $value];
-                }
+                return static::filterNumber($filter, $model);
             }
 
             $stringOperators = static::STRING_OPERATORS;
             if (isset($stringOperators[$filter['operator']])) {
-                $operator = $stringOperators[$filter['operator']];
-                $value = $filter['value'];
-                if ($filter['operator'] == 'contains' || $filter['operator'] == 'doesnotcontain') {
-                    $value = "%$value%";
-                } elseif ($filter['operator'] == 'startswith') {
-                    $value = "$value%";
-                } elseif ($filter['operator'] == 'endswith') {
-                    $value = "%$value";
-                }
-
-                if ($value !== null) {
-                    return [$operator, $attribute, $value, false];
-                }
+                return static::filterString($filter, $model);
             }
         }
 
         return null;
+    }
+
+    protected static function filterFilters($filter, ActiveRecord $model)
+    {
+        $logic = in_array($filter['logic'], ['or', 'and'], true) ? $filter['logic'] : static::DEFAULT_FILTER_LOGIC;
+
+        $where = [];
+        foreach ($filter['filters'] as $flt) {
+            if ($condition = static::filter($flt, $model)) {
+                $where[] = $condition;
+            }
+        }
+
+        if (count($where) > 1) {
+            array_unshift($where, $logic);
+        } else {
+            $where = $where ? $where[0] : null;
+        }
+
+        return $where;
+    }
+
+    protected static function filterNumber($filter, ActiveRecord $model)
+    {
+        $db = $model->getDb();
+        $columns = $model::getTableSchema()->columns;
+        $attribute = $model::tableName() . '.' . $filter['field'];
+        $type = $columns[$filter['field']]->type;
+
+        $numberOperators = static::NUMBER_OPERATORS;
+        $operator = $numberOperators[$filter['operator']];
+        $value = static::parseDate($filter['value']);
+        if ($value) {
+            if (in_array($type, [Schema::TYPE_INTEGER, Schema::TYPE_BIGINT])) {
+                $fromUnixtime = $db->driverName == 'pgsql' ? 'TO_TIMESTAMP' : 'FROM_UNIXTIME';
+                $attribute = 'DATE(' . $fromUnixtime . '(' . $db->quoteColumnName($attribute) . '))';
+            } elseif (in_array($type, [Schema::TYPE_TIMESTAMP, Schema::TYPE_DATE, Schema::TYPE_DATETIME, Schema::TYPE_TIME])) {
+                $attribute = 'DATE(' . $db->quoteColumnName($attribute) . ')';
+            } else {
+                $value = null;
+            }
+        }
+
+        if ($value === null) {
+            if (is_numeric($filter['value'])) {
+                $value = (float)$filter['value'];
+            } elseif (in_array($filter['value'], ['true', 'false'])) {
+                $operator = $filter['value'] == 'false'
+                    ? $numberOperators['eq']
+                    : $numberOperators['neq'];
+                $value = 0;
+            }
+        }
+
+        if ($value !== null) {
+            return [$operator, $attribute, $value];
+        }
+
+        return null;
+    }
+
+    protected static function filterString($filter, ActiveRecord $model)
+    {
+        $attribute = $model::tableName() . '.' . $filter['field'];
+        $stringOperators = static::STRING_OPERATORS;
+        $operator = $stringOperators[$filter['operator']];
+        $value = static::prepareStringValue($filter);
+        if ($value !== null) {
+            return [$operator, $attribute, $value, false];
+        }
+
+        return null;
+    }
+
+    protected static function prepareStringValue($filter)
+    {
+        $value = $filter['value'];
+        switch ($filter['operator']) {
+            case 'contains':
+            case 'doesnotcontain':
+                return "%$value%";
+            case 'startswith':
+                return "$value%";
+            case 'endswith':
+                return "%$value";
+        }
+
+        return $value;
     }
 
     public static function parseDate($value)
