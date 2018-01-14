@@ -38,6 +38,8 @@ class DataSource extends BaseDataSource
         'type' => 'POST',
     ];
 
+    private $_transportActions;
+
     public function init()
     {
         parent::init();
@@ -118,17 +120,16 @@ class DataSource extends BaseDataSource
 
     public function getTransportActions()
     {
-        static $result;
-        if ($result === null) {
-            $result = [];
+        if ($this->_transportActions === null) {
+            $this->_transportActions = [];
             foreach ($this->actions as $actionId => $settings) {
                 if ($key = static::transportKey($settings['class'])) {
-                    $result[$key] = $actionId;
+                    $this->_transportActions[$key] = $actionId;
                 }
             }
         }
 
-        return $result;
+        return $this->_transportActions;
     }
 
     public static function transportKey($actionClass)

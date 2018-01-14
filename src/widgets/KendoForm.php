@@ -29,6 +29,8 @@ class KendoForm extends \yii\widgets\ActiveForm
      */
     public $dataSource;
 
+    private $_modelInstance;
+
     /**
      * @inheritdoc
      */
@@ -122,12 +124,11 @@ class KendoForm extends \yii\widgets\ActiveForm
      */
     public function getModelInstance()
     {
-        static $model;
-        if ($model === null) {
-            $model = $this->dataSource->getKendoData()->getModelInstance();
+        if ($this->_modelInstance === null) {
+            $this->_modelInstance = $this->dataSource->getKendoData()->getModelInstance();
         }
 
-        return $model;
+        return $this->_modelInstance;
     }
 
     public function extendOptions($attribute, $options)
