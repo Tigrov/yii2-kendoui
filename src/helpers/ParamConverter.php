@@ -108,7 +108,7 @@ class ParamConverter
 
     protected static function filterFilters($filter, ActiveRecord $model)
     {
-        $logic = in_array($filter['logic'], ['or', 'and'], true) ? $filter['logic'] : static::DEFAULT_FILTER_LOGIC;
+        $logic = isset($filter['logic']) && strcasecmp($filter['logic'], 'or') === 0 ? 'or' : 'and';
 
         $where = [];
         foreach ($filter['filters'] as $flt) {
