@@ -130,6 +130,7 @@ class ParamConverter
             return static::filterFilters($filter, $model);
         }
 
+        $condition = null;
         $columns = $model::getTableSchema()->columns;
         if (!empty($filter['field']) && isset($columns[$filter['field']])
             && isset($filter['value']) && !empty($filter['operator'])
@@ -137,16 +138,17 @@ class ParamConverter
             $filter['operator'] = strtolower($filter['operator']);
             $numberOperators = static::NUMBER_OPERATORS;
             if (isset($numberOperators[$filter['operator']])) {
-                return static::filterNumber($filter, $model);
+                $condition = static::filterNumber($filter, $model);
             }
-
-            $stringOperators = static::STRING_OPERATORS;
-            if (isset($stringOperators[$filter['operator']])) {
-                return static::filterString($filter, $model);
+            if ($condition === null) {
+                $stringOperators = static::STRING_OPERATORS;
+                if (isset($stringOperators[$filter['operator']])) {
+                    $condition = static::filterString($filter, $model);
+                }
             }
         }
 
-        return null;
+        return $condition;
     }
 
     protected static function filterFilters($filter, ActiveRecord $model)
