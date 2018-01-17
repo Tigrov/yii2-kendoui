@@ -6,7 +6,6 @@ use yii\db\Schema;
 
 class ParamConverter
 {
-    const DEFAULT_FILTER_LOGIC = 'and';
     const DELTA_YEAR = 200;
 
     /**
@@ -45,6 +44,49 @@ class ParamConverter
     ];
 
     /**
+     * Convert aggregate query from Kendo UI to DB aggregate functions
+     *
+     * @param array $aggregates usually values of $_POST['aggregates']
+     * @param ActiveRecord $model model for generation aggregate functions
+     * @return array aggregate functions for Query::select()
+     */
+    public static function aggregate($aggregates, ActiveRecord $model)
+    {
+        if (!$aggregates || !is_array($aggregates)) {
+            return [];
+        }
+
+        $db = $model->getDb();
+        $attributes = $model->attributes();
+        $aggregateFunctions = static::AGGREGATE_FUNCTIONS;
+
+        $functions = [];
+        foreach ($aggregates as $aggregate) {
+            if (!empty($aggregate['aggregate']) && !empty($aggregate['field'])) {
+                $aggregateKey = strtolower($aggregate['aggregate']);
+                if (isset($aggregateFunctions[$aggregateKey]) && in_array($aggregate['field'], $attributes)) {
+                    $funcName = $aggregateFunctions[$aggregateKey];
+                    $functions[] = $funcName . '(' . $db->quoteColumnName($aggregate['field']) . ') '
+                        . ' AS ' . $db->quoteColumnName($aggregateKey . '_' . $aggregate['field']);
+                }
+            }
+        }
+
+        return $functions;
+    }
+
+    public static function aggregateValues($fields)
+    {
+        $values = [];
+        foreach ($fields as $field => $value) {
+            list($aggregate, $attribute) = explode('_', $field, 2);
+            $values[$attribute][$aggregate] = $value;
+        }
+
+        return $values;
+    }
+
+    /**
      * Convert sort query from Kendo UI to Yii2 orderBy columns
      *
      * @param array $sort usually values of $_POST['sort']
@@ -61,10 +103,10 @@ class ParamConverter
 
         $columns = [];
         foreach($sort as $s) {
-            if (!empty($s['field']) && in_array($s['field'], $attributes)
-                && !empty($s['dir']) && in_array($s['dir'], ['asc', 'desc'], true)
-            ) {
-                $columns[$s['field']] = $s['dir'] == 'asc' ? SORT_ASC : SORT_DESC;
+            if (!empty($s['field']) && in_array($s['field'], $attributes)) {
+                $columns[$s['field']] = isset($s['dir']) && strtolower($s['dir']) == 'desc'
+                    ? SORT_DESC
+                    : SORT_ASC;
             }
         }
 
@@ -85,13 +127,14 @@ class ParamConverter
         }
 
         if (!empty($filter['filters']) && is_array($filter['filters'])) {
-            return static::filterFilters();
+            return static::filterFilters($filter, $model);
         }
 
         $columns = $model::getTableSchema()->columns;
         if (!empty($filter['field']) && isset($columns[$filter['field']])
             && isset($filter['value']) && !empty($filter['operator'])
         ) {
+            $filter['operator'] = strtolower($filter['operator']);
             $numberOperators = static::NUMBER_OPERATORS;
             if (isset($numberOperators[$filter['operator']])) {
                 return static::filterNumber($filter, $model);
@@ -108,7 +151,9 @@ class ParamConverter
 
     protected static function filterFilters($filter, ActiveRecord $model)
     {
-        $logic = isset($filter['logic']) && strcasecmp($filter['logic'], 'or') === 0 ? 'or' : 'and';
+        $logic = isset($filter['logic']) && strtolower($filter['logic']) == 'or'
+            ? 'or'
+            : 'and';
 
         $where = [];
         foreach ($filter['filters'] as $flt) {
@@ -194,7 +239,7 @@ class ParamConverter
         return $value;
     }
 
-    public static function parseDate($value)
+    protected static function parseDate($value)
     {
         $result = date_parse($value);
         return checkdate($result['month'], $result['day'], $result['year'])
@@ -204,47 +249,5 @@ class ParamConverter
                 . '-' . str_pad($result['month'], 2, '0', STR_PAD_LEFT)
                 . '-' . str_pad($result['day'], 2, '0', STR_PAD_LEFT)
                 : null;
-    }
-
-    /**
-     * Convert aggregate query from Kendo UI to DB aggregate functions
-     *
-     * @param array $aggregates usually values of $_POST['aggregates']
-     * @param ActiveRecord $model model for generation aggregate functions
-     * @return array aggregate functions for Query::select()
-     */
-    public static function aggregate($aggregates, ActiveRecord $model)
-    {
-        if (!$aggregates || !is_array($aggregates)) {
-            return [];
-        }
-
-        $db = $model->getDb();
-        $attributes = $model->attributes();
-        $aggregateFunctions = static::AGGREGATE_FUNCTIONS;
-
-        $functions = [];
-        foreach ($aggregates as $aggregate) {
-            if (!empty($aggregate['aggregate']) && isset($aggregateFunctions[$aggregate['aggregate']])
-                && !empty($aggregate['field']) && in_array($aggregate['field'], $attributes)
-            ) {
-                $funcName = $aggregateFunctions[$aggregate['aggregate']];
-                $functions[] = $funcName . '(' . $db->quoteColumnName($aggregate['field']) . ') '
-                    . ' AS ' . $db->quoteColumnName($aggregate['aggregate'] . '_' . $aggregate['field']);
-            }
-        }
-
-        return $functions;
-    }
-
-    public static function aggregateValues($fields)
-    {
-        $values = [];
-        foreach ($fields as $field => $value) {
-            list($aggregate, $attribute) = explode('_', $field, 2);
-            $values[$attribute][$aggregate] = $value;
-        }
-
-        return $values;
     }
 }
