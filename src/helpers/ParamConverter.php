@@ -174,14 +174,13 @@ class ParamConverter
     protected static function filterNumber($filter, ActiveRecord $model)
     {
         $db = $model->getDb();
-        $columns = $model::getTableSchema()->columns;
         $attribute = $model::tableName() . '.' . $filter['field'];
-        $type = $columns[$filter['field']]->type;
 
         $numberOperators = static::NUMBER_OPERATORS;
         $operator = $numberOperators[$filter['operator']];
         $value = static::parseDate($filter['value']);
         if ($value) {
+            $type = $model::getTableSchema()->columns[$filter['field']]->type;
             if (in_array($type, [Schema::TYPE_INTEGER, Schema::TYPE_BIGINT])) {
                 $fromUnixtime = $db->driverName == 'pgsql' ? 'TO_TIMESTAMP' : 'FROM_UNIXTIME';
                 $attribute = 'DATE(' . $fromUnixtime . '(' . $db->quoteColumnName($attribute) . '))';
