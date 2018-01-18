@@ -1,6 +1,8 @@
 <?php
 namespace tigrov\kendoui\helpers;
 
+use yii\helpers\Json;
+
 class KendoHelper
 {
     /**
@@ -15,7 +17,7 @@ class KendoHelper
             $names[] = array('text' => $v, 'value' => $k);
         }
 
-        return json_encode($names);
+        return Json::encode($names);
     }
 
     public static function escape($value)

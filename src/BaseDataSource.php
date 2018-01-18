@@ -5,6 +5,7 @@ use tigrov\kendoui\builders\KendoDataBuilder;
 use tigrov\kendoui\helpers\DataSourceHelper;
 use yii\base\BaseObject;
 use yii\helpers\ArrayHelper;
+use yii\helpers\Json;
 
 /**
  * Class DataSource
@@ -63,7 +64,7 @@ class BaseDataSource extends BaseObject
 
     public function toJSON()
     {
-        return json_encode($this->toArray());
+        return Json::encode($this->toArray());
     }
 
     public function setKendoData($config)
