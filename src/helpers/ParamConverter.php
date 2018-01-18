@@ -8,6 +8,11 @@ class ParamConverter
 {
     const DELTA_YEAR = 200;
 
+    const COMMON_OPERATORS = [
+        'isnull' => 'IS NULL',
+        'isnotnull' => 'IS NULL',
+    ];
+
     /**
      * @var array query operators for filter by string fields
      */
@@ -18,6 +23,8 @@ class ParamConverter
         'contains' => 'like',
         'startswith' => 'like',
         'endswith' => 'like',
+        'isempty' => 'like',
+        'isnotempty' => 'not like',
     ];
 
     /**
@@ -25,11 +32,11 @@ class ParamConverter
      */
     const NUMBER_OPERATORS = [
         'eq' => '=',
+        'neq' => '!=',
         'gt' => '>',
         'gte' => '>=',
         'lt' => '<',
         'lte' => '<=',
-        'neq' => '!=',
     ];
 
     /**
@@ -135,17 +142,11 @@ class ParamConverter
         if (!empty($filter['field']) && isset($columns[$filter['field']])
             && isset($filter['value']) && !empty($filter['operator'])
         ) {
+            $attribute = $model::tableName() . '.' . $filter['field'];
             $filter['operator'] = strtolower($filter['operator']);
-            $numberOperators = static::NUMBER_OPERATORS;
-            if (isset($numberOperators[$filter['operator']])) {
-                $condition = static::filterNumber($filter, $model);
-            }
-            if ($condition === null) {
-                $stringOperators = static::STRING_OPERATORS;
-                if (isset($stringOperators[$filter['operator']])) {
-                    $condition = static::filterString($filter, $model);
-                }
-            }
+            $condition = static::filterCommon($attribute, $filter, $model)
+                ?: static::filterNumber($attribute, $filter, $model)
+                ?: static::filterString($attribute, $filter, $model);
         }
 
         return $condition;
@@ -173,52 +174,68 @@ class ParamConverter
         return $where;
     }
 
-    protected static function filterNumber($filter, ActiveRecord $model)
+    protected static function filterCommon($attribute, $filter, ActiveRecord $model)
     {
-        $db = $model->getDb();
-        $attribute = $model::tableName() . '.' . $filter['field'];
-
-        $numberOperators = static::NUMBER_OPERATORS;
-        $operator = $numberOperators[$filter['operator']];
-        $value = static::parseDate($filter['value']);
-        if ($value) {
-            $type = $model::getTableSchema()->columns[$filter['field']]->type;
-            if (in_array($type, [Schema::TYPE_INTEGER, Schema::TYPE_BIGINT])) {
-                $fromUnixtime = $db->driverName == 'pgsql' ? 'TO_TIMESTAMP' : 'FROM_UNIXTIME';
-                $attribute = 'DATE(' . $fromUnixtime . '(' . $db->quoteColumnName($attribute) . '))';
-            } elseif (in_array($type, [Schema::TYPE_TIMESTAMP, Schema::TYPE_DATE, Schema::TYPE_DATETIME, Schema::TYPE_TIME])) {
-                $attribute = 'DATE(' . $db->quoteColumnName($attribute) . ')';
-            } else {
-                $value = null;
+        $commonOperators = static::COMMON_OPERATORS;
+        if (isset($commonOperators[$filter['operator']])) {
+            switch ($filter['operator']) {
+                case 'isnull':
+                    return [$attribute => null];
+                case 'isnotnull':
+                    return ['not', [$attribute => null]];
             }
-        }
-
-        if ($value === null) {
-            if (is_numeric($filter['value'])) {
-                $value = (float)$filter['value'];
-            } elseif (in_array($filter['value'], ['true', 'false'])) {
-                $operator = $filter['value'] == 'false'
-                    ? $numberOperators['eq']
-                    : $numberOperators['neq'];
-                $value = 0;
-            }
-        }
-
-        if ($value !== null) {
-            return [$operator, $attribute, $value];
         }
 
         return null;
     }
 
-    protected static function filterString($filter, ActiveRecord $model)
+    protected static function filterNumber($attribute, $filter, ActiveRecord $model)
     {
-        $attribute = $model::tableName() . '.' . $filter['field'];
+        $numberOperators = static::NUMBER_OPERATORS;
+        if (isset($numberOperators[$filter['operator']])) {
+            $db = $model::getDb();
+            $operator = $numberOperators[$filter['operator']];
+            $value = static::parseDate($filter['value']);
+            if ($value) {
+                $type = $model::getTableSchema()->columns[$filter['field']]->type;
+                if (in_array($type, [Schema::TYPE_INTEGER, Schema::TYPE_BIGINT])) {
+                    $fromUnixtime = $db->driverName == 'pgsql' ? 'TO_TIMESTAMP' : 'FROM_UNIXTIME';
+                    $attribute = 'DATE(' . $fromUnixtime . '(' . $db->quoteColumnName($attribute) . '))';
+                } elseif (in_array($type, [Schema::TYPE_TIMESTAMP, Schema::TYPE_DATE, Schema::TYPE_DATETIME, Schema::TYPE_TIME])) {
+                    $attribute = 'DATE(' . $db->quoteColumnName($attribute) . ')';
+                } else {
+                    $value = null;
+                }
+            }
+
+            if ($value === null) {
+                if (is_numeric($filter['value'])) {
+                    $value = (float)$filter['value'];
+                } elseif (in_array($filter['value'], ['true', 'false'])) {
+                    $operator = $filter['value'] == 'false'
+                        ? $numberOperators['eq']
+                        : $numberOperators['neq'];
+                    $value = 0;
+                }
+            }
+
+            if ($value !== null) {
+                return [$operator, $attribute, $value];
+            }
+        }
+
+        return null;
+    }
+
+    protected static function filterString($attribute, $filter, ActiveRecord $model)
+    {
         $stringOperators = static::STRING_OPERATORS;
-        $operator = $stringOperators[$filter['operator']];
-        $value = static::prepareStringValue($filter);
-        if ($value !== null) {
-            return [$operator, $attribute, $value, false];
+        if (isset($stringOperators[$filter['operator']])) {
+            $operator = $stringOperators[$filter['operator']];
+            $value = static::prepareStringValue($filter);
+            if ($value !== null) {
+                return [$operator, $attribute, $value, false];
+            }
         }
 
         return null;
@@ -235,6 +252,9 @@ class ParamConverter
                 return "$value%";
             case 'endswith':
                 return "%$value";
+            case 'isempty':
+            case 'isnotempty':
+                return '';
         }
 
         return $value;
