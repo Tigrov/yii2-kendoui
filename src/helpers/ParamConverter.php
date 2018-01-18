@@ -234,6 +234,7 @@ class ParamConverter
             $operator = $stringOperators[$filter['operator']];
             $value = static::prepareStringValue($filter);
             if ($value !== null) {
+                $attribute = 'LOWER(' . $model::getDb()->quoteColumnName($attribute) . ')';
                 return [$operator, $attribute, $value, false];
             }
         }
@@ -243,7 +244,7 @@ class ParamConverter
 
     protected static function prepareStringValue($filter)
     {
-        $value = $filter['value'];
+        $value = strtolower($filter['value']);
         switch ($filter['operator']) {
             case 'contains':
             case 'doesnotcontain':
