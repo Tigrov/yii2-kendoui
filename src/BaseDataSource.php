@@ -12,6 +12,7 @@ use yii\helpers\Json;
  * @package tigrov\kendoui
  *
  * @property KendoData $kendoData
+ * @property-read array $model
  *
  * Kendo UI DataSource properties
  * @property array $aggregate
