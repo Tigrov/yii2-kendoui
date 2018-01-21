@@ -71,9 +71,9 @@ class BaseDataSource extends BaseObject
     {
         if (in_array($name, DataSourceHelper::PARAMS)) {
             $this->_config[$name] = $value;
+        } else {
+            parent::__set($name, $value);
         }
-
-        parent::__set($name, $value);
     }
 
     /**
