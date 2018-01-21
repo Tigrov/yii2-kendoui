@@ -13,6 +13,7 @@ use yii\helpers\Url;
  *
  * @property array $actions
  * @property string $controllerId
+ * @property array $transportConfig
  */
 
 class DataSource extends BaseDataSource
@@ -103,6 +104,17 @@ class DataSource extends BaseDataSource
     }
 
     /**
+     * Settings for schema object
+     * @return array
+     */
+    public function getSchema()
+    {
+        $kendoData = $this->getKendoData();
+        $response = $kendoData->getResponse();
+        return $response->getParams() + ['model' => $this->getModel()];
+    }
+
+    /**
      * Settings for transport object
      *
      * @return array
@@ -118,12 +130,12 @@ class DataSource extends BaseDataSource
         return $transport;
     }
 
-    public function getTransportActions()
+    private function getTransportActions()
     {
         if ($this->_transportActions === null) {
             $this->_transportActions = [];
             foreach ($this->actions as $actionId => $settings) {
-                if ($key = static::transportKey($settings['class'])) {
+                if ($key = $this->getTransportKey($settings['class'])) {
                     $this->_transportActions[$key] = $actionId;
                 }
             }
@@ -132,7 +144,7 @@ class DataSource extends BaseDataSource
         return $this->_transportActions;
     }
 
-    public static function transportKey($actionClass)
+    private function getTransportKey($actionClass)
     {
         foreach (DataSourceHelper::actions() as $key => $action) {
             if (is_a($actionClass, $action['class'], true)) {
@@ -141,16 +153,5 @@ class DataSource extends BaseDataSource
         }
 
         return null;
-    }
-
-    /**
-     * Settings for schema object
-     * @return array
-     */
-    public function getSchema()
-    {
-        $kendoData = $this->getKendoData();
-        $response = $kendoData->getResponse();
-        return $response->getParams() + ['model' => $this->getModel()];
     }
 }
