@@ -12,7 +12,9 @@ class Destroy extends Action
         if ($data && is_array($data)) {
             foreach ($data as $item) {
                 if ($model = $kendoData->findModel($item)) {
-                    if (!$model->delete()) {
+                    if ($this->beforeDelete($model) && $model->delete()) {
+                        $this->afterDelete($model);
+                    } else {
                         $response->addData($item);
                         $pk = $kendoData->getKeyValue($model);
                         $response->addError('Failed to remove the row {pk}', ['pk' => $pk]);

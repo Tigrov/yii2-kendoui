@@ -14,13 +14,20 @@ class Create extends Action
                 $model = $kendoData->getModelInstance(true);
                 $model->setAttributes($item);
                 try {
-                    if ($model->save()) {
-                        $response->addData($kendoData->getModelData($model));
-                    } else {
+                    $isSaved = false;
+                    if ($this->beforeSave(true, $model)) {
+                        $changedAttributes = array_fill_keys(array_merge(array_keys($model->getDirtyAttributes()), $model::primaryKey()), null);
+                        if ($model->save()) {
+                            $isSaved = true;
+                            $this->afterSave(true, $model, $changedAttributes);
+                            $response->addData($kendoData->getModelData($model));
+                        }
+                    }
+                    if (!$isSaved) {
                         $response->addData($item);
                         $kendoData->addValidationErrors($model);
                     }
-                } catch (\yii\db\IntegrityException $e) {
+                } catch (\Exception $e) {
                     // one or more unique constraint violations
                     $response->addData($item);
                     $kendoData->addEventErrorMessage($model, $e);
