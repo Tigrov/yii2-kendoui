@@ -14,15 +14,18 @@ class Update extends Action
                 if ($model = $kendoData->findModel($item)) {
                     $isSaved = false;
                     $model->setAttributes($item);
-                    if ($this->beforeSave(false, $model)) {
-                        $changedAttributes = array_merge(
-                            array_fill_keys(array_keys($model->getDirtyAttributes()), null),
-                            $model->getOldAttributes()
-                        );
-                        if ($model->save()) {
-                            $isSaved = true;
-                            $this->afterSave(false, $model, $changedAttributes);
-                            $response->addData($kendoData->getModelData($model));
+                    if ($this->beforeValidate($model) && $model->validate()) {
+                        $this->afterValidate($model);
+                        if ($this->beforeSave(false, $model)) {
+                            $changedAttributes = array_merge(
+                                array_fill_keys(array_keys($model->getDirtyAttributes()), null),
+                                $model->getOldAttributes()
+                            );
+                            if ($model->save(false)) {
+                                $isSaved = true;
+                                $this->afterSave(false, $model, $changedAttributes);
+                                $response->addData($kendoData->getModelData($model));
+                            }
                         }
                     }
                     if (!$isSaved) {

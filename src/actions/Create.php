@@ -15,12 +15,15 @@ class Create extends Action
                 $model->setAttributes($item);
                 try {
                     $isSaved = false;
-                    if ($this->beforeSave(true, $model)) {
-                        $changedAttributes = array_fill_keys(array_merge(array_keys($model->getDirtyAttributes()), $model::primaryKey()), null);
-                        if ($model->save()) {
-                            $isSaved = true;
-                            $this->afterSave(true, $model, $changedAttributes);
-                            $response->addData($kendoData->getModelData($model));
+                    if ($this->beforeValidate($model) && $model->validate()) {
+                        $this->afterValidate($model);
+                        if ($this->beforeSave(true, $model)) {
+                            $changedAttributes = array_fill_keys(array_merge(array_keys($model->getDirtyAttributes()), $model::primaryKey()), null);
+                            if ($model->save(false)) {
+                                $isSaved = true;
+                                $this->afterSave(true, $model, $changedAttributes);
+                                $response->addData($kendoData->getModelData($model));
+                            }
                         }
                     }
                     if (!$isSaved) {

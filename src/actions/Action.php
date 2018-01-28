@@ -43,6 +43,37 @@ abstract class Action extends \yii\base\Action
     abstract public function process();
 
     /**
+     * This method is invoked before validation starts.
+     * The default implementation raises a `beforeValidate` event.
+     * You may override this method to do preliminary checks before validation.
+     * Make sure the parent implementation is invoked so that the event can be raised.
+     * @param ActiveRecord $model
+     * @return bool whether the validation should be executed. Defaults to true.
+     * If false is returned, the validation will stop and the model is considered invalid.
+     */
+    public function beforeValidate($model)
+    {
+        $event = new ModelEvent([
+            'model' => $model,
+        ]);
+        $this->trigger(ActiveRecord::EVENT_BEFORE_VALIDATE, $event);
+
+        return $event->isValid;
+    }
+
+    /**
+     * This method is invoked after validation ends.
+     * The default implementation raises an `afterValidate` event.
+     * You may override this method to do postprocessing after validation.
+     * Make sure the parent implementation is invoked so that the event can be raised.
+     * @param ActiveRecord $model
+     */
+    public function afterValidate($model)
+    {
+        $this->trigger(ActiveRecord::EVENT_AFTER_VALIDATE, new BaseEvent(['model' => $model]));
+    }
+
+    /**
      * This method is called at the beginning of inserting or updating a record.
      *
      * The default implementation will trigger an [[EVENT_BEFORE_INSERT]] event when `$insert` is `true`,
