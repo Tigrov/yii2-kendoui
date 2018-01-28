@@ -208,9 +208,9 @@ class KendoForm extends \yii\widgets\ActiveForm
                 return 'numerictextbox';
             case 'datetime':
             case 'timestamp':
-                return 'datepicker';
-            case 'date':
                 return 'datetimepicker';
+            case 'date':
+                return 'datepicker';
             case 'time':
                 return 'timePicker';
         }
