@@ -3,6 +3,8 @@ namespace tigrov\kendoui\helpers;
 
 class DataSourceHelper
 {
+    const DELTA_YEAR = 500;
+
     const DEFAULT_KEY_SEPARATOR = '__';
 
     const PARAMS = [
@@ -151,5 +153,18 @@ class DataSourceHelper
             default:
                 return 'string';
         }
+    }
+
+    public static function parseDate($value)
+    {
+        $result = date_parse($value);
+
+        return checkdate($result['month'], $result['day'], $result['year'])
+        && $result['year'] >= date('Y') - static::DELTA_YEAR
+        && $result['year'] <= date('Y') + static::DELTA_YEAR
+            ? $result['year']
+            . '-' . str_pad($result['month'], 2, '0', STR_PAD_LEFT)
+            . '-' . str_pad($result['day'], 2, '0', STR_PAD_LEFT)
+            : null;
     }
 }

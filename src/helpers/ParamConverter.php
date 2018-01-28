@@ -6,8 +6,6 @@ use yii\db\Schema;
 
 class ParamConverter
 {
-    const DELTA_YEAR = 200;
-
     const COMMON_OPERATORS = [
         'isnull' => 'IS NULL',
         'isnotnull' => 'IS NULL',
@@ -195,7 +193,7 @@ class ParamConverter
         if (isset($numberOperators[$filter['operator']])) {
             $db = $model::getDb();
             $operator = $numberOperators[$filter['operator']];
-            $value = static::parseDate($filter['value']);
+            $value = DataSourceHelper::parseDate($filter['value']);
             if ($value) {
                 $type = $model::getTableSchema()->columns[$filter['field']]->type;
                 if (in_array($type, [Schema::TYPE_INTEGER, Schema::TYPE_BIGINT])) {
@@ -259,17 +257,5 @@ class ParamConverter
         }
 
         return $value;
-    }
-
-    protected static function parseDate($value)
-    {
-        $result = date_parse($value);
-        return checkdate($result['month'], $result['day'], $result['year'])
-            && $result['year'] >= date('Y') - static::DELTA_YEAR
-            && $result['year'] <= date('Y') + static::DELTA_YEAR
-                ? $result['year']
-                . '-' . str_pad($result['month'], 2, '0', STR_PAD_LEFT)
-                . '-' . str_pad($result['day'], 2, '0', STR_PAD_LEFT)
-                : null;
     }
 }
