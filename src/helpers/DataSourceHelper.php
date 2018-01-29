@@ -155,16 +155,86 @@ class DataSourceHelper
         }
     }
 
+    /**
+     * Prepare date or time or datetime for response
+     * @param mixed $value the date value
+     * @return null|string
+     */
+    public static function prepareDate($value)
+    {
+        if ($value) {
+            if (is_int($value)) {
+                $value = new \DateTime('@' . $value);
+            } elseif (is_string($value)) {
+                $value = new \DateTime($value);
+            } elseif (is_array($value)) {
+                $value = \DateTime::__set_state($value);
+            }
+            if ($value instanceof \DateTime) {
+                if ($value->getTimestamp()) {
+                    return $value->format(\DateTime::ATOM);
+                }
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Parse date from request
+     * @param string $value the date value
+     * @return null|string
+     */
     public static function parseDate($value)
     {
-        $result = date_parse($value);
+        return self::_composeDate(date_parse($value));
+    }
 
-        return checkdate($result['month'], $result['day'], $result['year'])
-        && $result['year'] >= date('Y') - static::DELTA_YEAR
-        && $result['year'] <= date('Y') + static::DELTA_YEAR
-            ? $result['year']
-            . '-' . str_pad($result['month'], 2, '0', STR_PAD_LEFT)
-            . '-' . str_pad($result['day'], 2, '0', STR_PAD_LEFT)
+    /**
+     * Parse time from request
+     * @param string $value the time value
+     * @return null|string
+     */
+    public static function parseTime($value)
+    {
+        return self::_composeTime(date_parse($value));
+    }
+
+    /**
+     * Parse datetime from request
+     * @param string $value the datetime value
+     * @return null|string
+     */
+    public static function parseDateTime($value)
+    {
+        $parsed = date_parse($value);
+        if ($date = self::_composeDate($parsed)) {
+            if ($time = self::_composeTime($parsed)) {
+                return $date . ' ' . $time;
+            }
+
+            return $date . ' 00:00:00';
+        }
+
+        return null;
+    }
+
+    private static function _composeDate($data)
+    {
+        return checkdate($data['month'], $data['day'], $data['year'])
+            ? $data['year']
+                . '-' . str_pad($data['month'], 2, '0', STR_PAD_LEFT)
+                . '-' . str_pad($data['day'], 2, '0', STR_PAD_LEFT)
+            : null;
+    }
+
+    private static function _composeTime($data)
+    {
+        return $data['hour'] || $data['minute'] || $data['second'] || $data['fraction']
+            ? str_pad($data['hour'], 2, '0', STR_PAD_LEFT)
+            . ':' . str_pad($data['minute'], 2, '0', STR_PAD_LEFT)
+            . ':' . str_pad($data['second'], 2, '0', STR_PAD_LEFT)
+            . '.' . rtrim((int)($data['fraction'] * 1000000), '0')
             : null;
     }
 }

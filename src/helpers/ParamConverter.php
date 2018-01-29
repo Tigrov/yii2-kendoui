@@ -2,6 +2,7 @@
 namespace tigrov\kendoui\helpers;
 
 use yii\db\ActiveRecord;
+use yii\db\Expression;
 use yii\db\Schema;
 
 class ParamConverter
@@ -193,16 +194,25 @@ class ParamConverter
         if (isset($numberOperators[$filter['operator']])) {
             $db = $model::getDb();
             $operator = $numberOperators[$filter['operator']];
-            $value = DataSourceHelper::parseDate($filter['value']);
-            if ($value) {
-                $type = $model::getTableSchema()->columns[$filter['field']]->type;
-                if (in_array($type, [Schema::TYPE_INTEGER, Schema::TYPE_BIGINT])) {
-                    $fromUnixtime = $db->driverName == 'pgsql' ? 'TO_TIMESTAMP' : 'FROM_UNIXTIME';
-                    $attribute = 'DATE(' . $fromUnixtime . '(' . $db->quoteColumnName($attribute) . '))';
-                } elseif (in_array($type, [Schema::TYPE_TIMESTAMP, Schema::TYPE_DATE, Schema::TYPE_DATETIME, Schema::TYPE_TIME])) {
-                    $attribute = 'DATE(' . $db->quoteColumnName($attribute) . ')';
-                } else {
-                    $value = null;
+
+            $value = null;
+            $type = $model::getTableSchema()->columns[$filter['field']]->type;
+            if (in_array($type, [Schema::TYPE_INTEGER, Schema::TYPE_BIGINT, Schema::TYPE_TIMESTAMP, Schema::TYPE_DATE, Schema::TYPE_DATETIME, Schema::TYPE_TIME])) {
+                $quotedAttribute = $db->quoteColumnName($attribute);
+                if ($type == Schema::TYPE_TIME) {
+                    if ($value = DataSourceHelper::parseTime($filter['value'])) {
+                        $attribute = new Expression($db->driverName == 'pgsql'
+                            ? 'TIME ' . $quotedAttribute
+                            : 'TIME(' . $quotedAttribute . ')'
+                        );
+                    }
+                } elseif ($value = DataSourceHelper::parseDate($filter['value'])) {
+                    if (in_array($type, [Schema::TYPE_INTEGER, Schema::TYPE_BIGINT])) {
+                        $fromUnixtime = $db->driverName == 'pgsql' ? 'TO_TIMESTAMP' : 'FROM_UNIXTIME';
+                        $attribute = new Expression('DATE(' . $fromUnixtime . '(' . $quotedAttribute . '))');
+                    } else {
+                        $attribute = new Expression('DATE(' . $quotedAttribute . ')');
+                    }
                 }
             }
 
