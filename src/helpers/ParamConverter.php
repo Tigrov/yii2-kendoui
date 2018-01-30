@@ -198,19 +198,14 @@ class ParamConverter
             $value = null;
             $type = $model::getTableSchema()->columns[$filter['field']]->type;
             if (in_array($type, [Schema::TYPE_INTEGER, Schema::TYPE_BIGINT, Schema::TYPE_TIMESTAMP, Schema::TYPE_DATE, Schema::TYPE_DATETIME, Schema::TYPE_TIME])) {
-                $quotedAttribute = $db->quoteColumnName($attribute);
                 if ($type == Schema::TYPE_TIME) {
-                    if ($value = DataSourceHelper::parseTime($filter['value'])) {
-                        $attribute = new Expression($db->driverName == 'pgsql'
-                            ? 'TIME ' . $quotedAttribute
-                            : 'TIME(' . $quotedAttribute . ')'
-                        );
-                    }
+                    $value = DataSourceHelper::parseTime($filter['value']);
                 } elseif ($value = DataSourceHelper::parseDate($filter['value'])) {
+                    $quotedAttribute = $db->quoteColumnName($attribute);
                     if (in_array($type, [Schema::TYPE_INTEGER, Schema::TYPE_BIGINT])) {
                         $fromUnixtime = $db->driverName == 'pgsql' ? 'TO_TIMESTAMP' : 'FROM_UNIXTIME';
                         $attribute = new Expression('DATE(' . $fromUnixtime . '(' . $quotedAttribute . '))');
-                    } else {
+                    } elseif ($type != Schema::TYPE_DATE) {
                         $attribute = new Expression('DATE(' . $quotedAttribute . ')');
                     }
                 }

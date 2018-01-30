@@ -1,6 +1,8 @@
 <?php
 namespace tigrov\kendoui\helpers;
 
+use yii\db\Schema;
+
 class DataSourceHelper
 {
     const DELTA_YEAR = 500;
@@ -133,23 +135,29 @@ class DataSourceHelper
     public static function convertType($type)
     {
         switch ($type) {
-            case 'boolean':
+            case Schema::TYPE_BOOLEAN:
                 return 'boolean';
-            case 'smallint':
-            case 'integer':
-            case 'bigint':
-            case 'float':
-            case 'decimal':
+            case Schema::TYPE_SMALLINT:
+            case Schema::TYPE_INTEGER:
+            case Schema::TYPE_BIGINT:
+            case Schema::TYPE_FLOAT:
+            case Schema::TYPE_DECIMAL:
+            case Schema::TYPE_DOUBLE:
+            case Schema::TYPE_PK:
+            case Schema::TYPE_UPK:
+            case Schema::TYPE_BIGPK:
+            case Schema::TYPE_UBIGPK:
                 return 'number';
-            case 'datetime':
-            case 'timestamp':
-            case 'date':
+            case Schema::TYPE_DATETIME:
+            case Schema::TYPE_TIMESTAMP:
+            case Schema::TYPE_DATE:
                 return 'date';
-            case 'string':
-            case 'text':
-            case 'binary':
-            case 'money':
-            case 'time':
+            case Schema::TYPE_CHAR:
+            case Schema::TYPE_STRING:
+            case Schema::TYPE_TEXT:
+            case Schema::TYPE_BINARY:
+            case Schema::TYPE_MONEY:
+            case Schema::TYPE_TIME:
             default:
                 return 'string';
         }
