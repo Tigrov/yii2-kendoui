@@ -76,6 +76,11 @@ class BaseDataSource extends BaseObject
         }
     }
 
+    public function __toString()
+    {
+        return $this->toJSON();
+    }
+
     /**
      * @return array
      */
