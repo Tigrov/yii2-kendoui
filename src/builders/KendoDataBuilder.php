@@ -22,15 +22,15 @@ class KendoDataBuilder
             if (!isset($config['class'])) {
                 $config['class'] = $className;
             }
-            return \Yii::createObject($config);
         } elseif (is_string($config)) {
             $config = [
                 'class' => $className,
-                'model' => $config,
+                'model' => ['class' => $config],
             ];
-            return \Yii::createObject($config);
+        } else {
+            throw new InvalidConfigException('KendoData configuration must be array, string, or instance of ' . static::CLASS_NAME .  '.');
         }
 
-        throw new InvalidConfigException('KendoData configuration must be array, string, or instance of ' . static::CLASS_NAME .  '.');
+        return \Yii::createObject($config);
     }
 }

@@ -25,18 +25,22 @@ class ActionsBuilder
     public static function build($config)
     {
         if (is_string($config)) {
-            return static::mergeConfig(['kendoData' => $config, 'actions' => DataSourceHelper::actions()]);
-        }
-
-        if (empty($config['kendoData'])) {
-            $config['kendoData'] = array_diff_key($config, ['actions' => '']);
-            $config = ArrayHelper::filter($config, ['kendoData', 'actions']);
-        }
-
-        if (empty($config['actions'])) {
-            $config['actions'] = DataSourceHelper::actions();
+            $config = ['kendoData' => ['model' => ['class' => $config]], 'actions' => DataSourceHelper::actions()];
         } else {
-            $config['actions'] = static::toAssociative($config['actions']);
+            if (empty($config['kendoData'])) {
+                $config['kendoData'] = array_diff_key($config, ['actions' => '']);
+                $config = ArrayHelper::filter($config, ['kendoData', 'actions']);
+            }
+            if (is_string($config['kendoData'])) {
+                $config['kendoData']['model']['class'] = $config['kendoData'];
+            } elseif (is_string($config['kendoData']['model'])) {
+                $config['kendoData']['model']['class'] = $config['kendoData']['model'];
+            }
+            if (empty($config['actions'])) {
+                $config['actions'] = DataSourceHelper::actions();
+            } else {
+                $config['actions'] = static::toAssociative($config['actions']);
+            }
         }
 
         return static::mergeConfig($config);
@@ -68,13 +72,7 @@ class ActionsBuilder
 
     private static function prefix($config)
     {
-        $className = is_string($config)
-            ? $config
-            : (is_string($config['model'])
-                ? $config['model']
-                : $config['model']['class']);
-
-        $shortName = (new \ReflectionClass($className))->getShortName();
+        $shortName = (new \ReflectionClass($config['model']['class']))->getShortName();
         return Inflector::camel2id($shortName) . '-';
     }
 
