@@ -32,9 +32,9 @@ class ActionsBuilder
                 $config = ArrayHelper::filter($config, ['kendoData', 'actions']);
             }
             if (is_string($config['kendoData'])) {
-                $config['kendoData']['model']['class'] = $config['kendoData'];
+                $config['kendoData'] = ['model' => ['class' => $config['kendoData']]];
             } elseif (is_string($config['kendoData']['model'])) {
-                $config['kendoData']['model']['class'] = $config['kendoData']['model'];
+                $config['kendoData']['model'] = ['class' => $config['kendoData']['model']];
             }
             if (empty($config['actions'])) {
                 $config['actions'] = DataSourceHelper::actions();
