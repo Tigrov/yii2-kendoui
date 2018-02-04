@@ -31,11 +31,7 @@ class ActionsBuilder
                 $config['kendoData'] = array_diff_key($config, ['actions' => '']);
                 $config = ArrayHelper::filter($config, ['kendoData', 'actions']);
             }
-            if (is_string($config['kendoData'])) {
-                $config['kendoData'] = ['model' => ['class' => $config['kendoData']]];
-            } elseif (is_string($config['kendoData']['model'])) {
-                $config['kendoData']['model'] = ['class' => $config['kendoData']['model']];
-            }
+            $config['kendoData'] = static::normalizeConfig($config['kendoData']);
             if (empty($config['actions'])) {
                 $config['actions'] = DataSourceHelper::actions();
             } else {
@@ -51,13 +47,18 @@ class ActionsBuilder
         $baseActions = DataSourceHelper::actions();
         $actions = $config['actions'];
         unset($config['actions']);
-        $prefix = static::prefix($config['kendoData']);
+        $prefix = static::prefix($config);
 
         $list = [];
         foreach ($actions as $id => $actionConfig) {
             if (is_array($actionConfig)) {
-                $actionPrefix = !empty($actionConfig['kendoData']) ? static::prefix($actionConfig['kendoData']) : $prefix;
-                $actionId = !empty($actionConfig['id']) ? $actionConfig['id'] : $actionPrefix.$id;
+                if (!empty($actionConfig['kendoData'])) {
+                    $actionConfig['kendoData'] = static::normalizeConfig($actionConfig['kendoData']);
+                }
+                $actionPrefix = static::prefix($actionConfig) ?: $prefix;
+                $actionId = !empty($actionConfig['id'])
+                    ? $actionConfig['id']
+                    : $actionPrefix.$id;
                 unset($actionConfig['id']);
             } else {
                 $actionId = $actionConfig;
@@ -72,8 +73,23 @@ class ActionsBuilder
 
     private static function prefix($config)
     {
-        $shortName = (new \ReflectionClass($config['model']['class']))->getShortName();
-        return Inflector::camel2id($shortName) . '-';
+        if (isset($config['kendoData']['model']['class'])) {
+            $shortName = (new \ReflectionClass($config['kendoData']['model']['class']))->getShortName();
+            return Inflector::camel2id($shortName) . '-';
+        }
+
+        return null;
+    }
+
+    private static function normalizeConfig($config)
+    {
+        if (is_string($config)) {
+            $config = ['model' => ['class' => $config]];
+        } elseif (is_string($config['model'])) {
+            $config['model'] = ['class' => $config['model']];
+        }
+
+        return $config;
     }
 
     private static function toAssociative($actions)
