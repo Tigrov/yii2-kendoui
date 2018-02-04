@@ -172,7 +172,7 @@ class DataSourceHelper
     {
         if ($value) {
             if (is_numeric($value)) {
-                $value = new \DateTime('@' . $value);
+                $value = new \DateTime('@' . (int) $value);
             } elseif (is_string($value)) {
                 $value = new \DateTime($value);
             } elseif (is_array($value)) {
