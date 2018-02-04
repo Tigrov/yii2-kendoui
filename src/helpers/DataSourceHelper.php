@@ -171,7 +171,7 @@ class DataSourceHelper
     public static function prepareDate($value)
     {
         if ($value) {
-            if (is_int($value)) {
+            if (is_numeric($value)) {
                 $value = new \DateTime('@' . $value);
             } elseif (is_string($value)) {
                 $value = new \DateTime($value);
