@@ -94,7 +94,8 @@ class DataSourceHelper
             $column = $columns[$attr];
 
             $result['fields'][$field] = [];
-            if (($type = static::convertType($column->type)) !== 'string') {
+            $type = static::convertType($column->type);
+            if ($type !== 'string') {
                 $result['fields'][$field]['type'] = $type;
             }
             if (!$column->allowNull && !$column->autoIncrement) {
