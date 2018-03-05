@@ -164,86 +164,49 @@ class DataSourceHelper
         }
     }
 
-    /**
-     * Prepare date or time or datetime for response
-     * @param mixed $value the date value
-     * @return null|string
-     */
-    public static function prepareDate($value)
+    public static function convertDateToJs($value, $type = null)
     {
-        if ($value) {
-            if (is_numeric($value)) {
-                $value = new \DateTime('@' . (int) $value);
-            } elseif (is_string($value)) {
-                $value = new \DateTime($value);
-            } elseif (is_array($value)) {
-                $value = \DateTime::__set_state($value);
-            }
-            if ($value instanceof \DateTime) {
-                if ($value->getTimestamp()) {
-                    return $value->format(\DateTime::ATOM);
-                }
-            }
+        $formatter = \Yii::$app->formatter;
+        switch ($type) {
+            case Schema::TYPE_DATE:
+                return $formatter->asDate($value, 'yyyy-MM-dd');
+            case Schema::TYPE_TIME:
+                return $formatter->asTime($value, 'HH:mm:ss');
+            // case Schema::TYPE_TIMESTAMP:
+            // case Schema::TYPE_DATETIME:
+            // case Schema::TYPE_INTEGER:
+            // case Schema::TYPE_BIGINT:
+            // default:
         }
 
-        return null;
+        return $formatter->asDatetime($value, \DateTime::RFC2822);
     }
 
     /**
      * Parse date from request
      * @param string $value the date value
-     * @return null|string
+     * @return \DateTime
      */
-    public static function parseDate($value)
+    public static function convertDateToDb($value, $type = null)
     {
-        return self::_composeDate(date_parse($value));
-    }
-
-    /**
-     * Parse time from request
-     * @param string $value the time value
-     * @return null|string
-     */
-    public static function parseTime($value)
-    {
-        return self::_composeTime(date_parse($value));
-    }
-
-    /**
-     * Parse datetime from request
-     * @param string $value the datetime value
-     * @return null|string
-     */
-    public static function parseDateTime($value)
-    {
-        $parsed = date_parse($value);
-        if ($date = self::_composeDate($parsed)) {
-            if ($time = self::_composeTime($parsed)) {
-                return $date . ' ' . $time;
+        $date = \DateTime::createFromFormat(\DateTime::RFC2822, $value);
+        if ($date !== null) {
+            switch ($type) {
+                case Schema::TYPE_DATE:
+                    return $date->format('Y-m-d');
+                case Schema::TYPE_TIME:
+                    return $date->format('H:i:s');
+                case Schema::TYPE_INTEGER:
+                case Schema::TYPE_BIGINT:
+                    return $date->getTimestamp();
+                // case Schema::TYPE_TIMESTAMP:
+                // case Schema::TYPE_DATETIME:
+                // default:
             }
 
-            return $date . ' 00:00:00';
+            return $date->format('Y-m-d H:i:s');
         }
 
         return null;
-    }
-
-    private static function _composeDate($data)
-    {
-        return checkdate($data['month'], $data['day'], $data['year'])
-            ? $data['year']
-                . '-' . str_pad($data['month'], 2, '0', STR_PAD_LEFT)
-                . '-' . str_pad($data['day'], 2, '0', STR_PAD_LEFT)
-            : null;
-    }
-
-    private static function _composeTime($data)
-    {
-        return $data['hour'] || $data['minute'] || $data['second'] || $data['fraction']
-            ? str_pad($data['hour'], 2, '0', STR_PAD_LEFT)
-            . ':' . str_pad($data['minute'], 2, '0', STR_PAD_LEFT)
-            . ':' . str_pad($data['second'], 2, '0', STR_PAD_LEFT)
-            . '.' . rtrim((int)($data['fraction'] * 1000000), '0')
-            : null;
     }
 }

@@ -5,6 +5,7 @@ namespace tigrov\kendoui;
 use tigrov\kendoui\helpers\DataSourceHelper;
 use yii\base\InvalidConfigException;
 use yii\base\BaseObject;
+use yii\db\Schema;
 
 /**
  * Class KendoData
@@ -217,7 +218,7 @@ class KendoData extends BaseObject
             $data[$pk] = $this->getKeyValue($model);
         }
 
-        return $data;
+        return $this->prepareDates([$data])[0];
     }
 
     /**
@@ -287,7 +288,7 @@ class KendoData extends BaseObject
             }
         }
 
-        return $data;
+        return $this->prepareDates($data);
     }
 
     public function filterAttributes($rows)
@@ -311,6 +312,26 @@ class KendoData extends BaseObject
             $keysFlip = array_flip($keys);
             foreach ($rows as $i => $row) {
                 $data[$i][$pk] = $this->composeKey(array_intersect_key($row, $keysFlip));
+            }
+        }
+
+        return $this->prepareDates($data);
+    }
+
+    protected function prepareDates($data)
+    {
+        $attributes = $this->getAttributes(true);
+        $modelClass = $this->getModelClass();
+        $columns = $modelClass::getTableSchema()->columns;
+
+        $dateTypes = [Schema::TYPE_DATETIME, Schema::TYPE_TIMESTAMP, Schema::TYPE_DATE, Schema::TYPE_TIME];
+        foreach ($attributes as $attr) {
+            if (isset($columns[$attr]) && in_array($columns[$attr]->type, $dateTypes)) {
+                for ($i = 0; $i < count($data); ++$i) {
+                    if (!empty($data[$i][$attr])) {
+                        $data[$i][$attr] = DataSourceHelper::convertDateToJs($data[$i][$attr], $columns[$attr]->type);
+                    }
+                }
             }
         }
 

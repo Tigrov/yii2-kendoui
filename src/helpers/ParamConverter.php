@@ -2,7 +2,6 @@
 namespace tigrov\kendoui\helpers;
 
 use yii\db\ActiveRecord;
-use yii\db\Expression;
 use yii\db\Schema;
 
 class ParamConverter
@@ -198,24 +197,14 @@ class ParamConverter
             $value = null;
             $type = $model::getTableSchema()->columns[$filter['field']]->type;
             if (in_array($type, [Schema::TYPE_INTEGER, Schema::TYPE_BIGINT, Schema::TYPE_TIMESTAMP, Schema::TYPE_DATE, Schema::TYPE_DATETIME, Schema::TYPE_TIME])) {
-                if ($type == Schema::TYPE_TIME) {
-                    $value = DataSourceHelper::parseTime($filter['value']);
-                } elseif ($value = DataSourceHelper::parseDate($filter['value'])) {
-                    $quotedAttribute = $db->quoteColumnName($attribute);
-                    if (in_array($type, [Schema::TYPE_INTEGER, Schema::TYPE_BIGINT])) {
-                        $fromUnixtime = $db->driverName == 'pgsql' ? 'TO_TIMESTAMP' : 'FROM_UNIXTIME';
-                        $attribute = new Expression('DATE(' . $fromUnixtime . '(' . $quotedAttribute . '))');
-                    } elseif ($type != Schema::TYPE_DATE) {
-                        $attribute = new Expression('DATE(' . $quotedAttribute . ')');
-                    }
-                }
+                $value = DataSourceHelper::convertDateToDb($value, $type);
             }
 
             if ($value === null) {
                 if (is_numeric($filter['value'])) {
                     $value = (float)$filter['value'];
-                } elseif (in_array($filter['value'], ['true', 'false'])) {
-                    $operator = $filter['value'] == 'false'
+                } elseif (in_array($filter['value'], ['true', 'false'], true)) {
+                    $operator = $filter['value'] === 'false'
                         ? $numberOperators['eq']
                         : $numberOperators['neq'];
                     $value = 0;
