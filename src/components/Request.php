@@ -75,7 +75,8 @@ class Request extends BaseObject
 
     public function getModels()
     {
-        if (is_null($data = $this->getData('models'))) {
+        $data = $this->getData('models');
+        if ($data === null) {
             // batch option is set to false
             $data = $this->getData();
             $data = $data ? [$data] : null;
