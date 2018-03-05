@@ -20,6 +20,7 @@ class Create extends Action
         $data = $kendoData->getRequest()->getModels();
 
         if ($data && is_array($data)) {
+            $data = $kendoData->prepareDatesToDb($data);
             foreach ($data as $item) {
                 $model = $kendoData->getModelInstance(true);
                 $model->setAttributes($item);

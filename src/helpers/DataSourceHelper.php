@@ -176,6 +176,10 @@ class DataSourceHelper
 
     public static function convertDateToJs($value, $type = null)
     {
+        if ($value === null) {
+            return null;
+        }
+
         $formatter = \Yii::$app->formatter;
         switch ($type) {
             case Schema::TYPE_DATE:
@@ -199,8 +203,11 @@ class DataSourceHelper
      */
     public static function convertDateToDb($value, $type = null)
     {
-        $date = \DateTime::createFromFormat(\DateTime::RFC2822, $value);
-        if ($date !== null) {
+        $date = $value
+            ? \DateTime::createFromFormat(\DateTime::RFC2822, $value)
+            : null;
+
+        if ($date) {
             switch ($type) {
                 case Schema::TYPE_DATE:
                     return $date->format('Y-m-d');

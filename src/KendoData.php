@@ -224,7 +224,7 @@ class KendoData extends BaseObject
             $data[$pk] = $this->getKeyValue($model);
         }
 
-        return $this->prepareDates([$data])[0];
+        return $this->prepareDatesToJs([$data])[0];
     }
 
     /**
@@ -294,7 +294,7 @@ class KendoData extends BaseObject
             }
         }
 
-        return $this->prepareDates($data);
+        return $this->prepareDatesToJs($data);
     }
 
     public function filterAttributes($rows)
@@ -321,10 +321,10 @@ class KendoData extends BaseObject
             }
         }
 
-        return $this->prepareDates($data);
+        return $this->prepareDatesToJs($data);
     }
 
-    protected function prepareDates($data)
+    protected function prepareDatesToJs($data)
     {
         $attributes = $this->getAttributes(true);
         $modelClass = $this->getModelClass();
@@ -336,6 +336,28 @@ class KendoData extends BaseObject
                 for ($i = 0; $i < count($data); ++$i) {
                     if (!empty($data[$i][$attr])) {
                         $data[$i][$attr] = DataSourceHelper::convertDateToJs($data[$i][$attr], $columns[$attr]->type);
+                    }
+                }
+            }
+        }
+
+        return $data;
+    }
+
+    public function prepareDatesToDb($data)
+    {
+        $attributes = $this->getAttributes(true);
+        $modelClass = $this->getModelClass();
+        $columns = $modelClass::getTableSchema()->columns;
+
+        $dateTypes = [Schema::TYPE_INTEGER, Schema::TYPE_BIGINT, Schema::TYPE_DATETIME, Schema::TYPE_TIMESTAMP,
+            Schema::TYPE_DATE, Schema::TYPE_TIME];
+        foreach ($attributes as $attr) {
+            if (isset($columns[$attr]) && in_array($columns[$attr]->type, $dateTypes)) {
+                for ($i = 0; $i < count($data); ++$i) {
+                    if (!empty($data[$i][$attr])) {
+                        $data[$i][$attr] = DataSourceHelper::convertDateToDb($data[$i][$attr], $columns[$attr]->type)
+                            ?: $data[$i][$attr];
                     }
                 }
             }
