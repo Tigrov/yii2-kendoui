@@ -1,8 +1,18 @@
 <?php
+/**
+ * @link https://github.com/Tigrov/yii2-kendoui
+ * @author Sergei Tigrov <rrr-r@ya.ru>
+ */
+
 namespace tigrov\kendoui\helpers;
 
 use yii\helpers\Json;
 
+/**
+ * Class KendoHelper
+ *
+ * @author Sergei Tigrov <rrr-r@ya.ru>
+ */
 class KendoHelper
 {
     /**

@@ -1,8 +1,15 @@
 <?php
+/**
+ * @link https://github.com/Tigrov/yii2-kendoui
+ * @author Sergei Tigrov <rrr-r@ya.ru>
+ */
+
 namespace tigrov\kendoui\components;
 
 /**
  * ModelEvent represents the parameter needed by [[Model]] events.
+ *
+ * @author Sergei Tigrov <rrr-r@ya.ru>
  */
 class ModelEvent extends BaseEvent
 {

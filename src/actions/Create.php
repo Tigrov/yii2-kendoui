@@ -1,6 +1,16 @@
 <?php
+/**
+ * @link https://github.com/Tigrov/yii2-kendoui
+ * @author Sergei Tigrov <rrr-r@ya.ru>
+ */
+
 namespace tigrov\kendoui\actions;
 
+/**
+ * Class Create
+ *
+ * @author Sergei Tigrov <rrr-r@ya.ru>
+ */
 class Create extends Action
 {
     public function process()

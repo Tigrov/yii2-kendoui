@@ -1,4 +1,9 @@
 <?php
+/**
+ * @link https://github.com/Tigrov/yii2-kendoui
+ * @author Sergei Tigrov <rrr-r@ya.ru>
+ */
+
 namespace tigrov\kendoui\widgets;
 
 use Yii;
@@ -9,6 +14,11 @@ use yii\helpers\ArrayHelper;
 use tigrov\kendoui\DataSource;
 use yii\helpers\Html;
 
+/**
+ * Class KendoForm
+ *
+ * @author Sergei Tigrov <rrr-r@ya.ru>
+ */
 class KendoForm extends \yii\widgets\ActiveForm
 {
     /**

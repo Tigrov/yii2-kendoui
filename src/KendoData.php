@@ -1,4 +1,8 @@
 <?php
+/**
+ * @link https://github.com/Tigrov/yii2-kendoui
+ * @author Sergei Tigrov <rrr-r@ya.ru>
+ */
 
 namespace tigrov\kendoui;
 
@@ -31,6 +35,8 @@ use yii\db\Schema;
  * Result of \Yii::configure($modelClass::find(), $query)
  * @property-read \tigrov\kendoui\components\Request $request
  * @property-read \tigrov\kendoui\components\Response $response
+ *
+ * @author Sergei Tigrov <rrr-r@ya.ru>
  */
 class KendoData extends BaseObject
 {

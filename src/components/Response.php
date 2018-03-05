@@ -1,4 +1,8 @@
 <?php
+/**
+ * @link https://github.com/Tigrov/yii2-kendoui
+ * @author Sergei Tigrov <rrr-r@ya.ru>
+ */
 
 namespace tigrov\kendoui\components;
 
@@ -13,6 +17,8 @@ use yii\helpers\ArrayHelper;
  * (default: data, total, errors, groups, aggregates)
  * @property array $data data for response
  * @property-read array $errors list of errors
+ * 
+ * @author Sergei Tigrov <rrr-r@ya.ru>
  */
 class Response extends BaseObject
 {

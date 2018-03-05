@@ -1,9 +1,19 @@
 <?php
+/**
+ * @link https://github.com/Tigrov/yii2-kendoui
+ * @author Sergei Tigrov <rrr-r@ya.ru>
+ */
+
 namespace tigrov\kendoui\builders;
 
 use yii\base\InvalidConfigException;
 use tigrov\kendoui\KendoData;
 
+/**
+ * Class KendoDataBuilder
+ *
+ * @author Sergei Tigrov <rrr-r@ya.ru>
+ */
 class KendoDataBuilder
 {
     const CLASS_NAME = '\tigrov\kendoui\KendoData';

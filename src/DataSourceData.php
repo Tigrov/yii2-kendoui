@@ -1,4 +1,9 @@
 <?php
+/**
+ * @link https://github.com/Tigrov/yii2-kendoui
+ * @author Sergei Tigrov <rrr-r@ya.ru>
+ */
+
 namespace tigrov\kendoui;
 
 use tigrov\kendoui\builders\KendoDataBuilder;
@@ -7,9 +12,10 @@ use yii\helpers\ArrayHelper;
 
 /**
  * Class DataSource
- * @package tigrov\kendoui
  *
  * @property \yii\db\ActiveRecord[] $models
+ *
+ * @author Sergei Tigrov <rrr-r@ya.ru>
  */
 
 class DataSourceData extends BaseDataSource

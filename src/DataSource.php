@@ -1,4 +1,9 @@
 <?php
+/**
+ * @link https://github.com/Tigrov/yii2-kendoui
+ * @author Sergei Tigrov <rrr-r@ya.ru>
+ */
+
 namespace tigrov\kendoui;
 
 use tigrov\kendoui\builders\KendoDataBuilder;
@@ -9,11 +14,12 @@ use yii\helpers\Url;
 
 /**
  * Class DataSource
- * @package tigrov\kendoui
  *
  * @property array $actions
  * @property string $controllerId
  * @property array $transportConfig
+ *
+ * @author Sergei Tigrov <rrr-r@ya.ru>
  */
 
 class DataSource extends BaseDataSource

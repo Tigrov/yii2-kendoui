@@ -1,4 +1,9 @@
 <?php
+/**
+ * @link https://github.com/Tigrov/yii2-kendoui
+ * @author Sergei Tigrov <rrr-r@ya.ru>
+ */
+
 namespace tigrov\kendoui;
 
 use tigrov\kendoui\builders\KendoDataBuilder;
@@ -34,6 +39,8 @@ use yii\helpers\Json;
  * @property string $type
  * @property array $transport
  * @property array $schema
+ *
+ * @author Sergei Tigrov <rrr-r@ya.ru>
  */
 
 class BaseDataSource extends BaseObject

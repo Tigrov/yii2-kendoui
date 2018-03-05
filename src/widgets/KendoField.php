@@ -1,9 +1,19 @@
 <?php
+/**
+ * @link https://github.com/Tigrov/yii2-kendoui
+ * @author Sergei Tigrov <rrr-r@ya.ru>
+ */
+
 namespace tigrov\kendoui\widgets;
 
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 
+/**
+ * Class KendoField
+ *
+ * @author Sergei Tigrov <rrr-r@ya.ru>
+ */
 class KendoField extends \yii\widgets\ActiveField
 {
     /**

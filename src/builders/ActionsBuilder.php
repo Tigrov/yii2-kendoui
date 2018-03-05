@@ -1,10 +1,20 @@
 <?php
+/**
+ * @link https://github.com/Tigrov/yii2-kendoui
+ * @author Sergei Tigrov <rrr-r@ya.ru>
+ */
+
 namespace tigrov\kendoui\builders;
 
 use tigrov\kendoui\helpers\DataSourceHelper;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Inflector;
 
+/**
+ * Class ActionsBuilder
+ *
+ * @author Sergei Tigrov <rrr-r@ya.ru>
+ */
 class ActionsBuilder
 {
     /**

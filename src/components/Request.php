@@ -1,4 +1,8 @@
 <?php
+/**
+ * @link https://github.com/Tigrov/yii2-kendoui
+ * @author Sergei Tigrov <rrr-r@ya.ru>
+ */
 
 namespace tigrov\kendoui\components;
 
@@ -10,8 +14,9 @@ use yii\base\BaseObject;
  * @property array $params key => value request parameters names specified by DataSource.transport.parameterMap
  * (default: take, skip, page, pageSize, filter, sort, models, group, aggregate)
  * @property array $data data from request (default $_POST ?: $_GET)
- *
  * @property-read array $models
+ *
+ * @author Sergei Tigrov <rrr-r@ya.ru>
  */
 class Request extends BaseObject
 {

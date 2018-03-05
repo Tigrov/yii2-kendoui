@@ -1,8 +1,18 @@
 <?php
+/**
+ * @link https://github.com/Tigrov/yii2-kendoui
+ * @author Sergei Tigrov <rrr-r@ya.ru>
+ */
+
 namespace tigrov\kendoui\helpers;
 
 use yii\db\Schema;
 
+/**
+ * Class DataSourceHelper
+ *
+ * @author Sergei Tigrov <rrr-r@ya.ru>
+ */
 class DataSourceHelper
 {
     const DELTA_YEAR = 500;

@@ -1,4 +1,9 @@
 <?php
+/**
+ * @link https://github.com/Tigrov/yii2-kendoui
+ * @author Sergei Tigrov <rrr-r@ya.ru>
+ */
+
 namespace tigrov\kendoui\actions;
 
 use tigrov\kendoui\builders\KendoDataBuilder;
@@ -8,6 +13,11 @@ use tigrov\kendoui\components\ModelEvent;
 use tigrov\kendoui\KendoData;
 use yii\db\ActiveRecord;
 
+/**
+ * Class Action
+ *
+ * @author Sergei Tigrov <rrr-r@ya.ru>
+ */
 abstract class Action extends \yii\base\Action
 {
     /** @var KendoData */
