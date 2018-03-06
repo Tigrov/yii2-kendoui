@@ -179,6 +179,9 @@ class DataSourceHelper
         if ($value === null) {
             return null;
         }
+        if (is_array($value)) {
+            $value = \DateTime::__set_state($value);
+        }
 
         $formatter = \Yii::$app->formatter;
         switch ($type) {
