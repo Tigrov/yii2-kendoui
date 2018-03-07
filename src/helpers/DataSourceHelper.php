@@ -207,7 +207,7 @@ class DataSourceHelper
     public static function convertDateToDb($value, $type = null)
     {
         $date = $value
-            ? \DateTime::createFromFormat(\DateTime::RFC2822, explode(' (', $value, 2)[0])
+            ? new \DateTime(explode(' (', $value, 2)[0])
             : null;
 
         if ($date) {
