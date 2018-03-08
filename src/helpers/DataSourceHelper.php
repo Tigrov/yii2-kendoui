@@ -180,6 +180,7 @@ class DataSourceHelper
             return null;
         }
         if (is_array($value)) {
+            // if $value is a \DateTime object which was converted to array.
             $value = \DateTime::__set_state($value);
         }
 
