@@ -185,7 +185,7 @@ class DataSourceHelper
         $formatter = \Yii::$app->getFormatter();
         $datetime = static::normalizeDatetimeValue($value, $formatter->defaultTimeZone);
         if ($datetime) {
-            $datetime->setTimezone($formatter->timeZone);
+            $datetime->setTimezone(new \DateTimeZone($formatter->timeZone));
             switch ($type) {
                 case Schema::TYPE_DATE:
                     return $datetime->format('Y-m-d');
@@ -215,7 +215,7 @@ class DataSourceHelper
         $formatter = \Yii::$app->getFormatter();
         $datetime = static::normalizeDatetimeValue($value, $formatter->timeZone);
         if ($datetime) {
-            $datetime->setTimezone($formatter->defaultTimeZone);
+            $datetime->setTimezone(new \DateTimeZone($formatter->defaultTimeZone));
             switch ($type) {
                 case Schema::TYPE_DATE:
                     return $datetime->format('Y-m-d');
