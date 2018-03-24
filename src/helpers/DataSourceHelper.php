@@ -174,58 +174,84 @@ class DataSourceHelper
         }
     }
 
+    /**
+     * Converts date to JS format
+     * @param mixed $value the date value
+     * @param string|null $type the abstract column data type
+     * @return string|null
+     */
     public static function convertDateToJs($value, $type = null)
     {
-        if ($value === null) {
-            return null;
-        }
-        if (is_array($value)) {
-            // if $value is a \DateTime object which was converted to array.
-            $value = \DateTime::__set_state($value);
+        $formatter = \Yii::$app->getFormatter();
+        $datetime = static::normalizeDatetimeValue($value, $formatter->defaultTimeZone);
+        if ($datetime) {
+            $datetime->setTimezone($formatter->timeZone);
+            switch ($type) {
+                case Schema::TYPE_DATE:
+                    return $datetime->format('Y-m-d');
+                case Schema::TYPE_TIME:
+                    return $datetime->format('H:i:s');
+                // case Schema::TYPE_TIMESTAMP:
+                // case Schema::TYPE_DATETIME:
+                // case Schema::TYPE_INTEGER:
+                // case Schema::TYPE_BIGINT:
+                // default:
+            }
+
+            return $datetime->format('D M d Y H:i:s \G\M\TO');
         }
 
-        $formatter = \Yii::$app->formatter;
-        switch ($type) {
-            case Schema::TYPE_DATE:
-                return $formatter->asDate($value, 'yyyy-MM-dd');
-            case Schema::TYPE_TIME:
-                return $formatter->asTime($value, 'HH:mm:ss');
-            // case Schema::TYPE_TIMESTAMP:
-            // case Schema::TYPE_DATETIME:
-            // case Schema::TYPE_INTEGER:
-            // case Schema::TYPE_BIGINT:
-            // default:
-        }
-
-        return $formatter->asDatetime($value, \DateTime::RFC2822);
+        return null;
     }
 
     /**
-     * Parse date from request
-     * @param string $value the date value
-     * @return \DateTime
+     * Converts date to DB format
+     * @param mixed $value the date value
+     * @param string|null $type the abstract column data type
+     * @return string|null
      */
     public static function convertDateToDb($value, $type = null)
     {
-        $date = $value
-            ? new \DateTime(explode(' (', $value, 2)[0])
-            : null;
-
-        if ($date) {
+        $formatter = \Yii::$app->getFormatter();
+        $datetime = static::normalizeDatetimeValue($value, $formatter->timeZone);
+        if ($datetime) {
+            $datetime->setTimezone($formatter->defaultTimeZone);
             switch ($type) {
                 case Schema::TYPE_DATE:
-                    return $date->format('Y-m-d');
+                    return $datetime->format('Y-m-d');
                 case Schema::TYPE_TIME:
-                    return $date->format('H:i:s');
+                    return $datetime->format('H:i:s');
                 case Schema::TYPE_INTEGER:
                 case Schema::TYPE_BIGINT:
-                    return $date->getTimestamp();
+                    return $datetime->getTimestamp();
                 // case Schema::TYPE_TIMESTAMP:
                 // case Schema::TYPE_DATETIME:
                 // default:
             }
 
-            return $date->format('Y-m-d H:i:s');
+            return $datetime->format('Y-m-d H:i:s');
+        }
+
+        return null;
+    }
+
+    /**
+     * Converts date to \DateTime
+     * @param mixed $value the date value
+     * @param string|null $timezone
+     * @return \DateTime|null
+     */
+    public static function normalizeDatetimeValue($value, $timezone = null)
+    {
+        if ($value instanceof \DateTime) {
+            return $value;
+        } elseif (is_array($value)) {
+            // if $value is a \DateTime object which was converted to array.
+            return \DateTime::__set_state($value);
+        } elseif (is_numeric($value)) { // process as unix timestamp, which is always in UTC
+            return new \DateTime('@' . (int)$value, new \DateTimeZone('UTC'));
+        } elseif (is_string($value)) {
+            return new \DateTime(explode(' (', $value, 2)[0], new \DateTimeZone($timezone));
         }
 
         return null;
