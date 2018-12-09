@@ -8,9 +8,7 @@ namespace tigrov\kendoui;
 
 use tigrov\kendoui\builders\KendoDataBuilder;
 use tigrov\kendoui\helpers\DataSourceHelper;
-use yii\base\BaseObject;
 use yii\helpers\ArrayHelper;
-use yii\helpers\Json;
 
 /**
  * Class DataSource
@@ -43,8 +41,14 @@ use yii\helpers\Json;
  * @author Sergei Tigrov <rrr-r@ya.ru>
  */
 
-class BaseDataSource extends BaseObject
+class BaseDataSource extends Base
 {
+    const PARAMS = [
+        'aggregate', 'autoSync', 'batch', 'data', 'filter', 'group', 'inPlaceSort', 'offlineStorage',
+        'page', 'pageSize', 'serverAggregates', 'serverFiltering', 'serverGrouping', 'serverPaging',
+        'serverSorting', 'sort', 'type', 'transport', 'schema'
+    ];
+
     /** @var KendoData */
     protected $_kendoData;
 
@@ -61,44 +65,6 @@ class BaseDataSource extends BaseObject
             ['schema' => $this->getSchema()],
             $this->_config
         );
-    }
-
-    public function __get($name)
-    {
-        if (in_array($name, DataSourceHelper::PARAMS)) {
-            return isset($this->_config[$name])
-                ? $this->_config[$name]
-                : null;
-        }
-
-        return parent::__get($name);
-    }
-
-    public function __set($name, $value)
-    {
-        if (in_array($name, DataSourceHelper::PARAMS)) {
-            $this->_config[$name] = $value;
-        } else {
-            parent::__set($name, $value);
-        }
-    }
-
-    public function __toString()
-    {
-        return $this->toJSON();
-    }
-
-    /**
-     * @return array
-     */
-    public function toArray()
-    {
-        return array_filter($this->_config);
-    }
-
-    public function toJSON()
-    {
-        return Json::encode($this->toArray());
     }
 
     public function setKendoData($config)

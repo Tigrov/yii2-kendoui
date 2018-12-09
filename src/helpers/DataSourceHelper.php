@@ -19,12 +19,6 @@ class DataSourceHelper
 
     const DEFAULT_KEY_SEPARATOR = '__';
 
-    const PARAMS = [
-        'aggregate', 'autoSync', 'batch', 'data', 'filter', 'group', 'inPlaceSort', 'offlineStorage',
-        'page', 'pageSize', 'serverAggregates', 'serverFiltering', 'serverGrouping', 'serverPaging',
-        'serverSorting', 'sort', 'type', 'transport', 'schema'
-    ];
-
     public static function actions()
     {
         return [
