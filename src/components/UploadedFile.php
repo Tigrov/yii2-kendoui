@@ -6,6 +6,8 @@
 
 namespace tigrov\kendoui\components;
 
+use yii\helpers\FileHelper;
+
 /**
  * Extended UploadedFile class.
  *
@@ -34,5 +36,18 @@ class UploadedFile extends \yii\web\UploadedFile
         }
 
         return $results;
+    }
+
+    public function saveChunkAs($file, $deleteTempFile = true)
+    {
+        if ($this->error == UPLOAD_ERR_OK) {
+            $content = file_get_contents($this->tempName);
+            file_put_contents($file, $content, FILE_APPEND);
+            if ($deleteTempFile) {
+                FileHelper::unlink($this->tempName);
+            }
+        }
+
+        return false;
     }
 }

@@ -20,10 +20,13 @@ class Save extends Action
     public function run()
     {
         $files = UploadedFile::getInstancesByNames($this->allowedNames);
-        if (isset($_POST['metadata'])) {
-            $this->uploadChunk($files[0]);
-        } else {
-            $this->uploadFiles($files);
+        if ($files) {
+            FileHelper::createDirectory($this->uploadPath);
+            if (isset($_POST['metadata'])) {
+                $this->uploadChunk($files[0]);
+            } else {
+                $this->uploadFiles($files);
+            }
         }
     }
 
@@ -35,10 +38,8 @@ class Save extends Action
     public function uploadChunk($file)
     {
         $metaData = json_decode($_POST['metadata']);
-        $content = file_get_contents($file->tempName);
         $fullPath = $this->uploadPath . DIRECTORY_SEPARATOR . $metaData->fileName;
-
-        file_put_contents($fullPath, $content, FILE_APPEND);
+        $file->saveChunkAs($fullPath);
 
         return [
             'uploaded' => $metaData->totalChunks - 1 <= $metaData->chunkIndex,
@@ -53,8 +54,6 @@ class Save extends Action
     public function uploadFiles($files)
     {
         foreach ($files as $file) {
-            FileHelper::createDirectory($this->uploadPath);
-
             $filename = $file->baseName . ($file->extension ? '.' . $file->extension : '');
 
             $fullPath = $this->uploadPath . DIRECTORY_SEPARATOR . $filename;
