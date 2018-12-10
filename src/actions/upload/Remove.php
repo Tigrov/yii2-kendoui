@@ -17,9 +17,14 @@ class Remove extends Action
     public function run()
     {
         $fileNames = \Yii::$app->getRequest()->post($this->removeField);
+        if ($fileNames) {
+            if (!is_array($fileNames)) {
+                $fileNames = [$fileNames];
+            }
 
-        for ($i = 0; $i < count($fileNames); $i++) {
-            FileHelper::unlink($this->uploadPath . DIRECTORY_SEPARATOR . $fileNames[$i]);
+            for ($i = 0; $i < count($fileNames); $i++) {
+                FileHelper::unlink($this->uploadPath . DIRECTORY_SEPARATOR . $fileNames[$i]);
+            }
         }
     }
 }
