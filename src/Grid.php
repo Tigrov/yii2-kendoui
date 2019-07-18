@@ -64,4 +64,29 @@ class Grid extends Base
 
         return Json::encode($config);
     }
+
+    /**
+     * @param BaseDataSource $dataSource
+     * @param string[]|null $attributes
+     * @return array
+     */
+    public static function columns($dataSource, $attributes = null)
+    {
+        $kendoData = $dataSource->getKendoData();
+        $model = $kendoData->getModelInstance();
+
+        if (!$attributes) {
+            $attributes = array_keys($dataSource->getModel()['fields']);
+        }
+
+        $columns = [];
+        foreach ($attributes as $attribute) {
+            $columns[] = [
+                'field' => $attribute,
+                'title' => $model->getAttributeLabel($attribute),
+            ];
+        }
+
+        return $columns;
+    }
 }
