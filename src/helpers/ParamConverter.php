@@ -201,7 +201,6 @@ class ParamConverter
     {
         $numberOperators = static::NUMBER_OPERATORS;
         if (isset($numberOperators[$filter['operator']])) {
-            $db = $model::getDb();
             $operator = $numberOperators[$filter['operator']];
 
             $value = null;
@@ -236,7 +235,7 @@ class ParamConverter
             $operator = $stringOperators[$filter['operator']];
             $value = static::prepareStringValue($filter);
             if ($value !== null) {
-                $attribute = 'LOWER(' . $model::getDb()->quoteColumnName($attribute) . ')';
+                $attribute = 'LOWER(CAST(' . $model::getDb()->quoteColumnName($attribute) . ' AS text))';
                 return [$operator, $attribute, $value, false];
             }
         }
