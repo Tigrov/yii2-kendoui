@@ -11,7 +11,7 @@ use yii\base\InvalidConfigException;
 use yii\helpers\ArrayHelper;
 
 /**
- * Class DataSource
+ * Class DataSourceData
  *
  * @property \yii\db\ActiveRecord[] $models
  *
@@ -38,7 +38,7 @@ class DataSourceData extends BaseDataSource
         if (is_array($config) && empty($config['model']) && $this->models) {
             $model = reset($this->models);
             if ($model instanceof \yii\db\ActiveRecord) {
-                $config['model'] = $model::className();
+                $config['model'] = get_class($model);
             }
         }
         $this->_kendoData = KendoDataBuilder::build($config);

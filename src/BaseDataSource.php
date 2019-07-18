@@ -11,7 +11,7 @@ use tigrov\kendoui\helpers\DataSourceHelper;
 use yii\helpers\ArrayHelper;
 
 /**
- * Class DataSource
+ * Class BaseDataSource
  * @package tigrov\kendoui
  *
  * @property KendoData $kendoData

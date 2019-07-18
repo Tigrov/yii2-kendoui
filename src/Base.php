@@ -8,6 +8,7 @@ namespace tigrov\kendoui;
 
 use yii\base\BaseObject;
 use yii\helpers\Json;
+use yii\web\JsExpression;
 
 /**
  * Class Base
@@ -63,5 +64,23 @@ class Base extends BaseObject
     public function toJSON()
     {
         return Json::encode($this->toArray());
+    }
+
+    public function addTemplateExpression($config, $param = 'template')
+    {
+        if (in_array($param, static::PARAMS) && !empty($config[$param]) && is_string($config[$param])) {
+            $config[$param] = new JsExpression('kendo.template(' . Json::encode($config[$param]) . ')');
+        }
+
+        return $config;
+    }
+
+    public function addDataSourceExpression($config, $param = 'dataSource')
+    {
+        if (in_array($param, static::PARAMS) && !empty($config[$param])) {
+            $config[$param] = new JsExpression('new kendo.data.DataSource(' . $config[$param] . ')');
+        }
+
+        return $config;
     }
 }

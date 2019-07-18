@@ -22,9 +22,9 @@ class KendoHelper
      * @return string JSON list of values ["text": value, "value": key]
      */
     public static function toValues($list) {
-        $names = array();
+        $names = [];
         foreach ($list as $k => $v) {
-            $names[] = array('text' => $v, 'value' => $k);
+            $names[] = ['text' => $v, 'value' => $k];
         }
 
         return Json::encode($names);
