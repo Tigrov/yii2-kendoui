@@ -19,15 +19,15 @@ class KendoHelper
      * Convert list with keys to Kendo UI values list
      *
      * @param $list [key => value]
-     * @return string JSON list of values ["text": value, "value": key]
+     * @return array list of values ["text": value, "value": key]
      */
     public static function toValues($list) {
-        $names = [];
+        $values = [];
         foreach ($list as $k => $v) {
-            $names[] = ['text' => $v, 'value' => $k];
+            $values[] = ['text' => $v, 'value' => $k];
         }
 
-        return Json::encode($names);
+        return $values;
     }
 
     public static function escape($value)
