@@ -25,14 +25,14 @@ class ParamConverter
      * @var array query operators for filter by string fields
      */
     const STRING_OPERATORS = [
-        'eq' => 'like',
-        'neq' => 'not like',
+        'eq' => '=',
+        'neq' => '!=',
         'doesnotcontain' => 'not like',
         'contains' => 'like',
         'startswith' => 'like',
         'endswith' => 'like',
-        'isempty' => 'like',
-        'isnotempty' => 'not like',
+        'isempty' => '=',
+        'isnotempty' => '!=',
     ];
 
     /**
