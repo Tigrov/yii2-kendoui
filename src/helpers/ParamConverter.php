@@ -236,7 +236,9 @@ class ParamConverter
             $value = static::prepareStringValue($filter);
             if ($value !== null) {
                 $attribute = 'LOWER(CAST(' . $model::getDb()->quoteColumnName($attribute) . ' AS text))';
-                return [$operator, $attribute, $value, false];
+                return in_array($operator, ['=', '!='])
+                    ? [$operator, $attribute, $value]
+                    : [$operator, $attribute, $value, false];
             }
         }
 
