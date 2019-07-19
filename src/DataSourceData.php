@@ -15,6 +15,27 @@ use yii\helpers\ArrayHelper;
  *
  * @property \yii\db\ActiveRecord[] $models
  *
+ * Kendo UI DataSource properties
+ * @property array $aggregate
+ * @property bool $autoSync
+ * @property bool $batch
+ * @property array|string $data
+ * @property array $filter
+ * @property array $group
+ * @property bool $inPlaceSort
+ * @property array|string $offlineStorage
+ * @property int $page
+ * @property int $pageSize
+ * @property bool $serverAggregates
+ * @property bool $serverFiltering
+ * @property bool $serverGrouping
+ * @property bool $serverPaging
+ * @property bool $serverSorting
+ * @property array $sort
+ * @property string $type
+ * @property array $transport
+ * @property array $schema
+ *
  * @author Sergei Tigrov <rrr-r@ya.ru>
  */
 
