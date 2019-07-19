@@ -250,4 +250,25 @@ class DataSourceHelper
 
         return null;
     }
+
+    /**
+     * Converts date to JS format for each date fields in action result
+     * it shold be run in `Controller::afterAction()`
+     * @param array $result action result @see `\tigrov\kendoui\components\Response::getResult()`
+     * @param string|string[] $fields date fields
+     * @return array
+     */
+    public static function convertResultDateToJs($result, $fields)
+    {
+        if (!empty($result['data'])) {
+            $fields = (array) $fields;
+            for ($i = 0, $l = count($result['data']); $i < $l; ++$i) {
+                foreach ($fields as $field) {
+                    $result['data'][$i][$field] = static::convertDateToJs($result['data'][$i][$field]);
+                }
+            }
+        }
+
+        return $result;
+    }
 }
