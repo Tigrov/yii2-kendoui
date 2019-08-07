@@ -289,6 +289,7 @@ class DataSourceHelper
             foreach ($value as $k => $v) {
                 $value[$k] = static::convertValueToType($v, $type);
             }
+            return $value;
         }
 
         switch ($type) {
