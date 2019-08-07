@@ -281,6 +281,16 @@ class DataSourceHelper
      */
     public static function convertValueToType($value, $type)
     {
+        if (is_callable($type)) {
+            return call_user_func($type, $value);
+        }
+
+        if (is_array($value) && in_array($type, ['string', 'date', 'time', 'datetime', 'timestamp', 'bool', 'boolean', 'int', 'integer', 'number', 'double', 'float'])) {
+            foreach ($value as $k => $v) {
+                $value[$k] = static::convertValueToType($v, $type);
+            }
+        }
+
         switch ($type) {
             case 'string': return (string) $value;
             case 'date':
@@ -296,10 +306,6 @@ class DataSourceHelper
             case 'float': return (float) $value;
             case 'array': return (array) $value;
             case 'object': return (object) $value;
-        }
-
-        if (is_callable($type)) {
-            return call_user_func($type, $value);
         }
 
         return $value;
