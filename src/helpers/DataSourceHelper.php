@@ -283,7 +283,10 @@ class DataSourceHelper
     {
         switch ($type) {
             case 'string': return (string) $value;
-            case 'date': return static::convertDateToJs($value);
+            case 'date':
+            case 'time':
+            case 'datetime':
+            case 'timestamp': return static::convertDateToJs($value, $type);
             case 'bool':
             case 'boolean': return (bool) $value;
             case 'int':
