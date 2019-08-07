@@ -252,23 +252,53 @@ class DataSourceHelper
     }
 
     /**
-     * Converts date to JS format for each date fields in action result
+     * Converts fields value to specified type in action result
      * it shold be run in `Controller::afterAction()`
      * @param array $result action result @see `\tigrov\kendoui\components\Response::getResult()`
-     * @param string|string[] $fields date fields
+     * @param string|string[] $fields fields
+     * @param string|callable $type type
      * @return array
      */
-    public static function convertResultDateToJs($result, $fields)
+    public static function convertResultToType($result, $fields, $type)
     {
         if (!empty($result['data'])) {
             $fields = (array) $fields;
             for ($i = 0, $l = count($result['data']); $i < $l; ++$i) {
                 foreach ($fields as $field) {
-                    $result['data'][$i][$field] = static::convertDateToJs($result['data'][$i][$field]);
+                    $result['data'][$i][$field] = static::convertValueToType($result['data'][$i][$field], $type);
                 }
             }
         }
 
         return $result;
+    }
+
+    /**
+     * Converts value to specified type
+     * @param mixed $value value
+     * @param string|callable $type type
+     * @return mixed ($type)
+     */
+    public static function convertValueToType($value, $type)
+    {
+        switch ($type) {
+            case 'string': return (string) $value;
+            case 'date': return static::convertDateToJs($value);
+            case 'bool':
+            case 'boolean': return (bool) $value;
+            case 'int':
+            case 'integer': return (int) $value;
+            case 'number':
+            case 'double':
+            case 'float': return (float) $value;
+            case 'array': return (array) $value;
+            case 'object': return (object) $value;
+        }
+
+        if (is_callable($type)) {
+            return call_user_func($type, $value);
+        }
+
+        return $value;
     }
 }
