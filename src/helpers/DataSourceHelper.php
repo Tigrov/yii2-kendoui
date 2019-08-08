@@ -257,15 +257,16 @@ class DataSourceHelper
      * @param array $result action result @see `\tigrov\kendoui\components\Response::getResult()`
      * @param string|string[] $fields fields
      * @param string|callable $type type
+     * @param int $dimension array dimension of field value. The value is not array for 0.
      * @return array
      */
-    public static function convertResultToType($result, $fields, $type)
+    public static function convertResultToType($result, $fields, $type, $dimension = 0)
     {
         if (!empty($result['data'])) {
             $fields = (array) $fields;
             for ($i = 0, $l = count($result['data']); $i < $l; ++$i) {
                 foreach ($fields as $field) {
-                    $result['data'][$i][$field] = static::convertValueToType($result['data'][$i][$field], $type);
+                    $result['data'][$i][$field] = static::convertValueToType($result['data'][$i][$field], $type, $dimension);
                 }
             }
         }
@@ -277,17 +278,18 @@ class DataSourceHelper
      * Converts value to specified type
      * @param mixed $value value
      * @param string|callable $type type
+     * @param int $dimension array dimension of the value. The value is not array for 0.
      * @return mixed ($type)
      */
-    public static function convertValueToType($value, $type)
+    public static function convertValueToType($value, $type, $dimension = 0)
     {
         if (is_callable($type)) {
             return call_user_func($type, $value);
         }
 
-        if (is_array($value) && in_array($type, ['string', 'date', 'time', 'datetime', 'timestamp', 'bool', 'boolean', 'int', 'integer', 'number', 'double', 'float'])) {
+        if ($dimension > 0) {
             foreach ($value as $k => $v) {
-                $value[$k] = static::convertValueToType($v, $type);
+                $value[$k] = static::convertValueToType($v, $type, $dimension - 1);
             }
             return $value;
         }
