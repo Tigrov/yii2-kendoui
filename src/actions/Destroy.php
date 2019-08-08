@@ -22,6 +22,7 @@ class Destroy extends Action
         if ($data && is_array($data)) {
             foreach ($data as $item) {
                 if ($model = $kendoData->findModel($item)) {
+                    $this->afterFind($model);
                     if ($this->beforeDelete($model) && $model->delete()) {
                         $this->afterDelete($model);
                     } else {

@@ -6,6 +6,7 @@
 
 namespace tigrov\kendoui;
 
+use tigrov\kendoui\actions\Action;
 use tigrov\kendoui\helpers\DataSourceHelper;
 use yii\base\InvalidConfigException;
 use yii\base\BaseObject;
@@ -277,7 +278,12 @@ class KendoData extends BaseObject
         return $attributes;
     }
 
-    public function toModelArray($rows)
+    /**
+     * @param array $rows
+     * @param Action $action
+     * @return array
+     */
+    public function toModelArray($rows, $action = null)
     {
         $attributes = $this->getAttributes() ?: [];
         $extraFields = $this->extraFields;
@@ -288,6 +294,9 @@ class KendoData extends BaseObject
             $model = $this->getModelInstance(true);
             $model::populateRecord($model, $row);
             $model->afterFind();
+            if ($action !== null) {
+                $action->afterFind($model);
+            }
             $data[$i] = $model->toArray($attributes, $extraFields);
             if (empty($data[$i][$pk])) {
                 $data[$i][$pk] = $this->getKeyValue($model);
@@ -297,6 +306,10 @@ class KendoData extends BaseObject
         return $this->prepareDatesToJs($data);
     }
 
+    /**
+     * @param array $rows
+     * @return array
+     */
     public function filterAttributes($rows)
     {
         $attributes = $this->getAttributes();

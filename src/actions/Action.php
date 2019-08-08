@@ -199,16 +199,4 @@ abstract class Action extends \yii\base\Action
     {
         $this->trigger(ActiveRecord::EVENT_AFTER_DELETE, new BaseEvent(['model' => $model]));
     }
-
-    /**
-     * This method is called when the AR object is refreshed.
-     * The default implementation will trigger an [[EVENT_AFTER_REFRESH]] event.
-     * When overriding this method, make sure you call the parent implementation to ensure the
-     * event is triggered.
-     * @param ActiveRecord $model
-     */
-    public function afterRefresh($model)
-    {
-        $this->trigger(ActiveRecord::EVENT_AFTER_REFRESH, new BaseEvent(['model' => $model]));
-    }
 }

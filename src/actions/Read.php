@@ -41,7 +41,7 @@ class Read extends Action {
 
         $rows = $kendoData->getActiveQuery()->asArray()->all();
         $response->data = $kendoData->getExtendMode()
-            ? $kendoData->toModelArray($rows)
+            ? $kendoData->toModelArray($rows, $this)
             : $kendoData->filterAttributes($rows);
     }
 

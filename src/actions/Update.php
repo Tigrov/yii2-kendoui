@@ -23,6 +23,7 @@ class Update extends Action
             $data = $kendoData->prepareDatesToDb($data);
             foreach ($data as $item) {
                 if ($model = $kendoData->findModel($item)) {
+                    $this->afterFind($model);
                     $isSaved = false;
                     $model->setAttributes($item);
                     if ($this->beforeValidate($model) && $model->validate()) {
