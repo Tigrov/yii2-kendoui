@@ -288,8 +288,10 @@ class DataSourceHelper
         }
 
         if ($dimension > 0) {
-            foreach ($value as $k => $v) {
-                $value[$k] = static::convertValueToType($v, $type, $dimension - 1);
+            if (is_array($value)) {
+                foreach ($value as $k => $v) {
+                    $value[$k] = static::convertValueToType($v, $type, $dimension - 1);
+                }
             }
             return $value;
         }
