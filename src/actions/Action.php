@@ -84,6 +84,18 @@ abstract class Action extends \yii\base\Action
     }
 
     /**
+     * This method is called when the AR object is created and populated with the query result.
+     * The default implementation will trigger an [[EVENT_AFTER_FIND]] event.
+     * When overriding this method, make sure you call the parent implementation to ensure the
+     * event is triggered.
+     * @param ActiveRecord $model
+     */
+    public function afterFind($model)
+    {
+        $this->trigger(ActiveRecord::EVENT_AFTER_FIND, new BaseEvent(['model' => $model]));
+    }
+
+    /**
      * This method is called at the beginning of inserting or updating a record.
      *
      * The default implementation will trigger an [[EVENT_BEFORE_INSERT]] event when `$insert` is `true`,
@@ -186,5 +198,17 @@ abstract class Action extends \yii\base\Action
     public function afterDelete($model)
     {
         $this->trigger(ActiveRecord::EVENT_AFTER_DELETE, new BaseEvent(['model' => $model]));
+    }
+
+    /**
+     * This method is called when the AR object is refreshed.
+     * The default implementation will trigger an [[EVENT_AFTER_REFRESH]] event.
+     * When overriding this method, make sure you call the parent implementation to ensure the
+     * event is triggered.
+     * @param ActiveRecord $model
+     */
+    public function afterRefresh($model)
+    {
+        $this->trigger(ActiveRecord::EVENT_AFTER_REFRESH, new BaseEvent(['model' => $model]));
     }
 }
