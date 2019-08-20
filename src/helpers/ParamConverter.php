@@ -16,7 +16,7 @@ use yii\db\Schema;
  */
 class ParamConverter
 {
-    const COMMON_OPERATORS = [
+    const NULL_OPERATORS = [
         'isnull' => 'IS NULL',
         'isnotnull' => 'IS NULL',
     ];
@@ -152,7 +152,7 @@ class ParamConverter
         ) {
             $attribute = $model::tableName() . '.' . $filter['field'];
             $filter['operator'] = strtolower($filter['operator']);
-            $condition = static::filterCommon($attribute, $filter, $model)
+            $condition = static::filterNull($attribute, $filter, $model)
                 ?: static::filterNumber($attribute, $filter, $model)
                 ?: static::filterString($attribute, $filter, $model);
         }
@@ -182,16 +182,13 @@ class ParamConverter
         return $where;
     }
 
-    protected static function filterCommon($attribute, $filter, ActiveRecord $model)
+    protected static function filterNull($attribute, $filter, ActiveRecord $model)
     {
-        $commonOperators = static::COMMON_OPERATORS;
-        if (isset($commonOperators[$filter['operator']])) {
-            switch ($filter['operator']) {
-                case 'isnull':
-                    return [$attribute => null];
-                case 'isnotnull':
-                    return ['not', [$attribute => null]];
-            }
+        $nullOperators = static::NULL_OPERATORS;
+        if (isset($nullOperators[$filter['operator']])) {
+            return $filter['operator'] === 'isnull'
+                ? [$attribute => null]
+                : ['not', [$attribute => null]];
         }
 
         return null;
@@ -205,18 +202,23 @@ class ParamConverter
 
             $value = null;
             $type = $model::getTableSchema()->columns[$filter['field']]->type;
-            if (in_array($type, [Schema::TYPE_INTEGER, Schema::TYPE_BIGINT, Schema::TYPE_TIMESTAMP, Schema::TYPE_DATE, Schema::TYPE_DATETIME, Schema::TYPE_TIME])) {
+            if (in_array($type, [Schema::TYPE_TIMESTAMP, Schema::TYPE_DATE, Schema::TYPE_DATETIME, Schema::TYPE_TIME])
+                || is_numeric($value) && in_array($type, [Schema::TYPE_INTEGER, Schema::TYPE_BIGINT])
+                    && DataSourceHelper::DELTA_TIME > abs(time() - $value)
+            ) {
                 $value = DataSourceHelper::convertDateToDb($value, $type);
             }
 
             if ($value === null) {
                 if (is_numeric($filter['value'])) {
-                    $value = (float)$filter['value'];
+                    $value = filter_var($filter['value'], FILTER_VALIDATE_INT) !== false
+                        ? $filter['value']
+                        : (float)$filter['value'];
                 } elseif (in_array($filter['value'], ['true', 'false'], true)) {
+                    $value = 0;
                     $operator = $filter['value'] === 'false'
                         ? $numberOperators['eq']
                         : $numberOperators['neq'];
-                    $value = 0;
                 }
             }
 

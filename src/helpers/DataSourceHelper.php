@@ -15,7 +15,7 @@ use yii\db\Schema;
  */
 class DataSourceHelper
 {
-    const DELTA_YEAR = 500;
+    const DELTA_TIME = 500 * 31536000; // 60 * 60 * 24 * 365
 
     const DEFAULT_KEY_SEPARATOR = '__';
 
