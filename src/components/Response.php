@@ -59,9 +59,14 @@ class Response extends BaseObject
 
     public function addError($message, $params = [])
     {
-        $this->_errors[] = $params
-            ? strtr($message, array_map(function($v){return'{'.$v.'}';}, array_keys($params)), $params)
-            : $message;
+        if ($params) {
+            $pairKeys = array_map(function($v){return'{'.$v.'}';}, array_keys($params));
+            $replacePairs = array_combine($pairKeys, array_values($params));
+
+            return strtr($message, $replacePairs);
+        }
+
+        return $message;
     }
 
     public function addValidationErrors($errors)
