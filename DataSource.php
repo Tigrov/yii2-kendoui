@@ -1,7 +1,7 @@
 <?php
 namespace tigrov\kendoui;
 
-use yii\base\Object;
+use yii\base\BaseObject;
 use yii\helpers\Url;
 use yii\helpers\ArrayHelper;
 use yii\helpers\StringHelper;
@@ -19,7 +19,7 @@ use tigrov\kendoui\actions\Delete;
  * @property-read Action $actionInstance instance of Action for generate model
  */
 
-class DataSource extends Object
+class DataSource extends BaseObject
 {
     /**
      * @var array action IDs for generate transport object
